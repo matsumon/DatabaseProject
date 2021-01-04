@@ -1,0 +1,7 @@
+# Remove scratch and test directories and their content any where in the project
+**/scratch/**
+**/test/**
+
+# remove pre-compliled code where ever it maybe
+**/bin/**
+**/node_modules/**
