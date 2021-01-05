@@ -1,6 +1,7 @@
 const support = require('../support.js');
 
 module.exports = function (app) {
+
     // CONFIGURE ERROR HANDLING ROUTES
     // HTTP 404 handler
     app.use(function (req, res) {
