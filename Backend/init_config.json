@@ -1,4 +1,5 @@
 {
     "http_port": 53200,
-    "bcrypt_rounds": 3
+    "bcrypt_rounds": 3,
+    "Log_Root": "../App_Log/"
 }

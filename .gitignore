@@ -5,3 +5,6 @@
 # remove pre-compliled code where ever it maybe
 **/bin/**
 **/node_modules/**
+
+# remove Runtime_Log directories
+**/App_Log/**

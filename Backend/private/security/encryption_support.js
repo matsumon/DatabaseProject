@@ -1,5 +1,6 @@
 // provides encryption related operations for use in other code
 const config = require('../../init_config.json'); // include configuration file for future references
+const support = require('../support.js'); // enable support functions
 const bcrypt = require('bcrypt');   // imports bcrypt library for use
 
 module.exports = {
