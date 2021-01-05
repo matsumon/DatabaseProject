@@ -1,6 +1,8 @@
 /*
 This Script should init our databases for based on our design we created a dbdiagram.io file for
 */
+USE cs340_smithb22; /* Select our target DB to create these tables in*/
+
 CREATE TABLE `user` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `username` varchar(50) UNIQUE NOT NULL,
@@ -47,12 +49,12 @@ CREATE TABLE `user_to_role` (
   `role` int
 );
 
-ALTER TABLE `credential` ADD FOREIGN KEY (`id`) REFERENCES `user_to_cred` (`user_cred`);
+ALTER TABLE `user_to_cred` ADD FOREIGN KEY (`user_cred`) REFERENCES `credential` (`id`);
 
 ALTER TABLE `user_to_cred` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 
 ALTER TABLE `session` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 
-ALTER TABLE `role` ADD FOREIGN KEY (`id`) REFERENCES `user_to_role` (`role`);
+ALTER TABLE `user_to_role` ADD FOREIGN KEY (`role`) REFERENCES `role` (`id`);
 
 ALTER TABLE `user_to_role` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
