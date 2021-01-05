@@ -7,13 +7,13 @@ Table "user" {
 
 Table "role" {
   "id" int [pk, increment]
-  "logon" boolean
-  "update" boolean
-  "auth" boolean
-  "validate" boolean
-  "super" boolean
-  "special" boolean
-  "role_title" varchar(255) [unique, not null]
+  "logon" boolean     [note: "Can user Logon?"]
+  "update" boolean    [note: "Can User Update Their User Account?"]
+  "auth" boolean      [note: "Can User Generate a Auth Token?"]
+  "validate" boolean  [note: "Can User Validate Authentication Tokens?"]
+  "super" boolean     [note: "Is User a ADMINISTRATOR?"]
+  "special" boolean   [note: "Is User Special?"]
+  "role_title" varchar(255) [unique, not null, note: "Title of the ROLE"]
 }
 
 Table "user_to_cred" {
