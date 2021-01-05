@@ -1,5 +1,7 @@
 {
     "http_port": 53200,
     "bcrypt_rounds": 3,
-    "Log_Root": "../App_Log/"
+    "log_root": "../App_Log/",
+    "app_name" : "DBRPOJECT:API",
+    "debug_mode": true
 }
