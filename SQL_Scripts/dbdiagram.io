@@ -5,9 +5,9 @@
 // tables
 Table user {
   id int [pk, increment] // auto-increment
-  username varchar [unique] //50
-  created_at timestamp
-  email varchar
+  username varchar [unique, not null] //50
+  created_at timestamp [not null]
+  email varchar 
 }
 
 Table role {
@@ -18,7 +18,7 @@ Table role {
   validate boolean
   super boolean
   special boolean
-  role_title varchar [unique]
+  role_title varchar [unique, not null]
 }
 
 Table user_to_cred {
@@ -30,26 +30,26 @@ ref: user_to_cred.(user_id) > user.(id)
 
 Table credential {
   id int [pk, increment]
-  hash varchar 
-  salt varchar
-  exp_date timestamp
-  created_date timestamp
-  enabled boolean
+  hash varchar [not null]
+  salt varchar [not null]
+  exp_date timestamp [not null]
+  created_date timestamp [not null]
+  enabled boolean [not null]
 }
 
 Table session{
   id int [pk, increment]
   user_id int [ref: > user.id]
-  token varchar [unique]
-  exp_date datetime
-  user_req_date datetime
-  created_at timestamp
+  token varchar [unique, not null]
+  exp_date datetime [not null]
+  user_req_date datetime [not null]
+  created_at timestamp [not null]
   
 }
 
 Table user_to_role {
   user_id int
-  role int 
+  role int
 
 }
 

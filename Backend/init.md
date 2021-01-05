@@ -6,9 +6,14 @@
 This component is to provide a API interface for the following
 - Create User
 - Update User
-- Remove User
-- Authenticate a User
+- Read User data
+- Delete user
+
+- Authenticate a User (create a user token)
 - Validate a User Token
+
+- Renew User Token (create a new token for a session, requested by a user)
+- Revoke User Token ("sign out" - destroy a token on command)
 
 
 # Installation

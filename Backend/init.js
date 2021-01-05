@@ -25,7 +25,6 @@ app.use(bodyParser.json()); // Enable Decode of Body Encoded Post Requests
 
 // Server listener Setup
 var httpServer; // Create hook to append http server if used
-var httpsServer; // Create hook to append https server if used
 //#endregion
 
 //#region HTTP Server Pre Launch
