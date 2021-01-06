@@ -3,6 +3,7 @@ const config = require('../../init_config.json'); // include configuration file 
 const support = require('../support.js'); // enable support functions
 const bcrypt = require('bcrypt');   // imports bcrypt library for use
 
+
 module.exports = {
     // this will hash a password in a method using our DB salt
     hash_password: function(password, db_salt){                     

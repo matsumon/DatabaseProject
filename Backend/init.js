@@ -1,7 +1,6 @@
 //#region includes
 const fs = require('fs'); // include support for file fs operations for https key read modes
 const http = require('http'); // include support for http listeners
-const https = require('https') // include support for https listeners
 var express = require('express'); // include express utilities
 const config = require('./init_config.json'); // include configuration file for future references
 const support = require('./private/support'); // include support functions for logging and the like
@@ -16,7 +15,7 @@ var app = express(); // Set up Express
 app.use(express.static('public')); // Enable a Static Resources Directory
 require('./private/routes/main_handlers.js')(app); // include the Root Page Handlers
 require('./private/routes/error.js')(app); // include the error page Handlers
-require('./private/routes/error.js')(app); // include the error page Handlers
+
 
 
 // Express JSON Interpreter Config
