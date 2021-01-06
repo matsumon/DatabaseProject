@@ -16,7 +16,6 @@ support.log("debug", "database_access.js - Establishing Connection to Database w
 
 var pool = mysql.createPool(pool_config);
 
-support.log("debug", "database_access.js - Database Connection ESTABLISHED");
 support.log("info", "database_access.js - Database Connection ESTABLISHED");
 
 module.exports.pool = pool;
