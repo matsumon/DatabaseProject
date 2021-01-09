@@ -1,7 +1,5 @@
 ## CS340-DBRPOJECT API
 
-
-
 # Purpose
 This component is to provide a API interface for the following
 - Create User  - (nicholas)

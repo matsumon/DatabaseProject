@@ -7,12 +7,12 @@ const bcrypt = require('bcrypt');
 const db = require('../Database/database_access.js');
 
 // Declare a new Asynchronous function using promises
-async function async_set_password(package) {
+async function set_password(package) {
     // prepare to return a promise when our function is called
     return new Promise((resolve, reject) => {
         // verify supplied object is suitable to execute requested operation
         if (package.hasOwnProperty('password') && package.hasOwnProperty('user_id')) {
-            support.log("debug", `p_credential.js - async_set_password : Setting Password for user_id : ${package.user_id}`);
+            support.log("debug", `p_credential.js - set_password : Setting Password for user_id : ${package.user_id}`);
 
             // Hash the password
             bcrypt.hash(package.password, config.bcrypt_rounds).then(hash => {
@@ -24,7 +24,7 @@ async function async_set_password(package) {
                     id = ${package.user_id};`
 
                 db.promise_pool.query(query).then(() => {
-                    support.log("debug", `p_credential.js - async_set_password : Password for user_id : ${package.user_id} was set`);
+                    support.log("debug", `p_credential.js - set_password : Password for user_id : ${package.user_id} was set`);
 
                     //set our resolve data for return
                     const r_msg = {
@@ -38,14 +38,14 @@ async function async_set_password(package) {
 
                 }).catch((error) => {
                     // our query failed, log the incident
-                    support.log("error", "p_credential.js - async_set_password : Unable to Set Password db.promise_pool failed to service the query")
+                    support.log("error", "p_credential.js - set_password : Unable to Set Password db.promise_pool failed to service the query")
 
                     // reject our promise, promoting the application pools failure as needed.
                     reject(error);
                 })
 
             }).catch((error) => {
-                support.log("error", "p_credential.js - async_set_password : Unable to Set Password bcrypt failed to hash password");
+                support.log("error", "p_credential.js - set_password : Unable to Set Password bcrypt failed to hash password");
                 support.log("error", error);
                 reject("Unable to Set Password, bcrypt failed to hash password");
             });
@@ -53,7 +53,7 @@ async function async_set_password(package) {
         }
         //abort operation if supplied object is unsuitable
         else {
-            support.log("error", "p_credential.js - async_set_password : Aborted Execution due to unexpected or missing Key-Value pairs");
+            support.log("error", "p_credential.js - set_password : Aborted Execution due to unexpected or missing Key-Value pairs");
             reject("Supplied Object does not contain the expected key-value pairs to complete operation, Operation aborted.");
 
         }
@@ -61,11 +61,11 @@ async function async_set_password(package) {
 
 };
 
-async function async_compare_password(package) {
+async function compare_password(package) {
     return new Promise((resolve, reject) => {
         // verify we were provided a suitable object
         if (package.hasOwnProperty('password') && package.hasOwnProperty('user_id')) {
-            support.log("debug", `p_credential.js - async_compare_password : Comparing provided password for user_id : ${package.user_id}`);
+            support.log("debug", `p_credential.js - compare_password : Comparing provided password for user_id : ${package.user_id}`);
 
             // retrieve password hash for comparison
             const hash_retrieval_query = `SELECT hash
@@ -81,23 +81,23 @@ async function async_compare_password(package) {
                 bcrypt.compare(package.password, stored_hash).then((result) => {
                     // handle the two conditions of the comparison
                     if (result == true) {
-                        support.log("debug", "p_credential.js - async_compare_password : Password Comparison Operation Successful - MATCH ")
+                        support.log("debug", "p_credential.js - compare_password : Password Comparison Operation Successful - MATCH ")
                         resolve(true);
                     } else {
-                        support.log("debug", "p_credential.js - async_compare_password : Password Comparison Operation Successful - DOES NOT MATCH")
+                        support.log("debug", "p_credential.js - compare_password : Password Comparison Operation Successful - DOES NOT MATCH")
                         resolve(false);
                     }
 
                 }).catch((error) => {
                     // our comparison failed, log the incident
-                    support.log("error", "p_credential.js - async_compare_password : Unable to compare Password bcrypt failed to service the operation")
+                    support.log("error", "p_credential.js - compare_password : Unable to compare Password bcrypt failed to service the operation")
                     // reject our promise, promoting the application pools failure as needed.
                     reject(error);
 
                 })
             }).catch((error) => {
                 // our query failed, log the incident
-                support.log("error", "p_credential.js - async_compare_password : Unable to compare Password db.promise_pool failed to service the query")
+                support.log("error", "p_credential.js - compare_password : Unable to compare Password db.promise_pool failed to service the query")
                 // reject our promise, promoting the application pools failure as needed.
                 reject(error);
 
@@ -106,13 +106,41 @@ async function async_compare_password(package) {
         }
         //abort operation if not provided suitable object
         else {
-            support.log("error", "p_credential.js - async_compare_password : Aborted Execution due to unexpected or missing Key-Value pairs");
+            support.log("error", "p_credential.js - compare_password : Aborted Execution due to unexpected or missing Key-Value pairs");
             reject("Supplied Object does not contain the expected key-value pairs to complete operation, Operation aborted.");
         }
 
     });
 };
 
+async function create_credential(new_password){
+    return new Promise((resolve,reject)=>{
+        support.log("error", "p_credential.js - create_credential : Creating new Credential");
+
+
+    });
+};
+
+async function remove_credential(credential_id){
+    return new Promise((resolve,reject)=>{
+        support.log("error", `p_credential.js - remove_credential : Removing Credential id ${credential_id}`);
+
+
+    });
+};
+
+async function update_credential(package){
+    return new Promise((resolve,reject)=>{
+        support.log("error", `p_credential.js - update_credential : Updating Credential id ${credential_id}`);
+
+
+    });
+}
+
+
 //export required module components
-module.exports.async_set_password = async_set_password;
-module.exports.async_compare_password = async_compare_password;
+module.exports.set_password = set_password;
+module.exports.compare_password = compare_password;
+module.exports.create_credential = create_credential;
+module.exports.remove_credential = remove_credential;
+module.exports.update_credential = update_credential;
