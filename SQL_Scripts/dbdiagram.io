@@ -24,7 +24,6 @@ Table "user_to_cred" {
 Table "credential" {
   "id" int [pk, increment]
   "hash" varchar(255) [not null]
-  "salt" varchar(255) [not null]
   "exp_date" timestamp [not null]
   "created_date" timestamp [not null]
   "enabled" boolean [not null]

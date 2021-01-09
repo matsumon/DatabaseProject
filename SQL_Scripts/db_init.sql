@@ -29,7 +29,6 @@ CREATE TABLE `user_to_cred` (
 CREATE TABLE `credential` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `hash` varchar(255) NOT NULL,
-  `salt` varchar(255) NOT NULL,
   `exp_date` timestamp NOT NULL,
   `created_date` timestamp NOT NULL,
   `enabled` boolean NOT NULL
