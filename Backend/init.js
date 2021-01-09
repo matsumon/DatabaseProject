@@ -3,7 +3,7 @@ const fs = require('fs'); // include support for file fs operations for https ke
 const http = require('http'); // include support for http listeners
 var express = require('express'); // include express utilities
 const config = require('./init_config.json'); // include configuration file for future references
-const support = require('./private/support'); // include support functions for logging and the like
+const support = require('./private/support.js'); // include support functions for logging and the like
 //#endregion
 
 support.log("debug", "SERVER PRE_INIT STARTED");

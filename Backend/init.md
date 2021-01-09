@@ -35,7 +35,7 @@ Passwords must be limited to 30 char max or bcrypt will cut it short
 
 # API Data structures
 
-GENERAL JSON FORMAT:
+GENERAL JSON REQUEST FORMAT:
 {
     username: "",
     token: "",
@@ -60,3 +60,5 @@ LOG ON REQUEST JSON
         role: ""
     }
 }
+
+API Response Format

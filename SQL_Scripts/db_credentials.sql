@@ -13,5 +13,5 @@ update enabled status
 
 UPDATE `cs340_smithb22`.`credential`
 SET
-`enabled` = 'AFKAT'
+`enabled` = '1'
 WHERE `id` = 1;
