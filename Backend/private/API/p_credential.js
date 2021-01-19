@@ -81,11 +81,24 @@ async function compare_password(package) {
                 bcrypt.compare(package.password, stored_hash).then((result) => {
                     // handle the two conditions of the comparison
                     if (result == true) {
-                        support.log("debug", "p_credential.js - compare_password : Password Comparison Operation Successful - MATCH ")
-                        resolve(true);
+                        support.log("debug", "p_credential.js - compare_password : Password Comparison Operation Successful - MATCH ");
+
+                        const r_msg = {
+                            "status": 1,
+                            "Message": `Password successfully set for user_id ${package.user_id}`,
+                            "result": true
+                        };
+
+                        resolve(r_msg );
                     } else {
-                        support.log("debug", "p_credential.js - compare_password : Password Comparison Operation Successful - DOES NOT MATCH")
-                        resolve(false);
+                        support.log("debug", "p_credential.js - compare_password : Password Comparison Operation Successful - DOES NOT MATCH");
+                        const r_msg = {
+                            "status": 1,
+                            "Message": `Password successfully set for user_id ${package.user_id}`,
+                            "result": false
+                        };
+
+                        resolve(r_msg);
                     }
 
                 }).catch((error) => {
@@ -113,11 +126,36 @@ async function compare_password(package) {
     });
 };
 
-async function create_credential(new_password){
+async function create_credential(){
+    // this will create a new credential, however you will still need to set the password after credential creation
     return new Promise((resolve,reject)=>{
-        support.log("error", "p_credential.js - create_credential : Creating new Credential");
+        support.log("debug", "p_credential.js - create_credential : Creating new Credential");
+        // first build a query that will create a new credential object and return the PK field 'id' from its creation
+        const credential_creation_query = `INSERT into ${config.db_rootDatabase}.credential
+        (hash,
+        exp_date,
+        created_date,
+        enabled)
+        VALUES('', CURRENT_TIMESTAMP + INTERVAL 1 YEAR, CURRENT_TIMESTAMP, 1);`
+        db.promise_pool.query(credential_creation_query).then((rows)=>{
+            support.log("debug", `p_credential.js - create_credential : Credential Created - ID of new Object = ${rows[0].insertId}`);
+
+            const r_msg = {
+                "status": 1,
+                "Message": `Password successfully set for user_id ${package.user_id}`,
+                "insertId": rows[0].insertId
+            };
+
+            // resolve returning the data package containing the details
+            resolve(r_msg);
 
 
+        }).catch((error) => {
+            // our query failed, log the incident
+            support.log("error", "p_credential.js - create_credential : Unable to create new Credential db.promise_pool failed to service the query")
+            // reject our promise, promoting the application pools failure as needed.
+            reject(error);
+        })
     });
 };
 

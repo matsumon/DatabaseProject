@@ -6,9 +6,17 @@ const db = require('../Database/database_access.js');
 
 
 //define required functions
-async function create_session();
-async function update_session();
-async function remove_session();
+async function create_session(){
+    return new Promise((resolve,reject)=>{
+        support.log("error", "p_session.js - create_session : Creating new session");
+
+
+    });
+};
+
+async function update_session(){};
+
+async function remove_session(){}}
 
 
 

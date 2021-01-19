@@ -4,6 +4,7 @@ const http = require('http'); // include support for http listeners
 var express = require('express'); // include express utilities
 const config = require('./init_config.json'); // include configuration file for future references
 const support = require('./private/support.js'); // include support functions for logging and the like
+const test = require('./private/API/p_credential'); // bring in credential handling to allow dev/test operation
 //#endregion
 
 support.log("debug", "SERVER PRE_INIT STARTED");
@@ -44,3 +45,5 @@ httpServer.listen(config.http_port);
 //#endregion
 
 support.log("info", "SERVER INITIALIZED");
+
+test.create_credential();
