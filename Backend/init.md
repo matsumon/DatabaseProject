@@ -13,6 +13,7 @@ This component is to provide a API interface for the following
 - Renew User Token (create a new token for a session, requested by a user) - (brian)
 - Revoke User Token ("sign out" - destroy a token on command) - (brian)
 - [DONE] Credential Handling operations - (brian)
+- [DONE] Create Session API interface - (brian)
 
 
 # Installation

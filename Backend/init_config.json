@@ -11,7 +11,5 @@
     "db_host": "classmysql.engr.oregonstate.edu",
     "db_serviceUser": "cs340_smithb22",
     "db_password": "8113",
-    "db_rootDatabase": "cs340_smithb22",
-
-    "Session_HMAC_Seed": "ZcRvNOoj%c7c-[9GPK3)4WQ=ou;F@-X2mYVjy.lx"
+    "db_rootDatabase": "cs340_smithb22"
 }
