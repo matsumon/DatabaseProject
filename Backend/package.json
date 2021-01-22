@@ -10,6 +10,7 @@
   "license": "None",
   "dependencies": {
     "bcrypt": "^5.0.0",
+    "crypto": "^1.0.1",
     "express": "^4.17.1",
     "express-winston": "^4.0.5",
     "fs": "0.0.1-security",

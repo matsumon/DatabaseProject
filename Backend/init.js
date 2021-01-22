@@ -44,4 +44,3 @@ httpServer.listen(config.http_port);
 //#endregion
 
 support.log("info", "SERVER INITIALIZED");
-

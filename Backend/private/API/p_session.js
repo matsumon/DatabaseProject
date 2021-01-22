@@ -16,8 +16,8 @@ async function create_session(package) {
 
             //Create a Session Token
             // note: session init components below are generated randomly on request, making the targeted generation of colliding tokens impossible
-            const random_iv = Crypto.randomBytes(25).toString('base64').slice(0, 25)        // generates a 25char length random IV for crypto.createHmac(sha256)
-            const random_secret = Crypto.randomBytes(60).toString('base64').slice(0,60);    // generates a 60char random secret for crypto.createHmac(sha256) 
+            const random_iv = crypto.randomBytes(25).toString('base64').slice(0, 25)        // generates a 25char length random IV for crypto.createHmac(sha256)
+            const random_secret = crypto.randomBytes(60).toString('base64').slice(0,60);    // generates a 60char random secret for crypto.createHmac(sha256) 
             const time_secret_value = support.getBasicDate() + random_iv + random_secret;   // ties our random value generations to the time of request making
                                                                                             //      our token derivation time dependant and harder compute
             // generate our token from a SHA256 hash of the iv and secret
@@ -36,8 +36,8 @@ async function create_session(package) {
             )
             VALUES
             (${package.id},
-            ${token},
-            CURRENT_TIMESTAMP + INTERVAL 15 MINUTES,
+            '${token}',
+            CURRENT_TIMESTAMP + INTERVAL 15 MINUTE,
             CURRENT_TIMESTAMP,
             CURRENT_TIMESTAMP)`
 
