@@ -161,8 +161,27 @@ async function create_credential(){
 
 async function remove_credential(credential_id){
     return new Promise((resolve,reject)=>{
-        support.log("error", `p_credential.js - remove_credential : Removing Credential id ${credential_id}`);
+        support.log("debug", `p_credential.js - remove_credential : Removing Credential id ${credential_id}`);
 
+        const credential_removal_query = `DELETE from ${config.db_rootDatabase}.credential
+        WHERE id = ${credential_id}`
+
+        db.promise_pool.query(credential_removal_query).then(()=>{
+            support.log('debug', `p_credential.js - remove_credential : credential ${credential_id} removed.`);
+
+            const r_msg = {
+                "status": 1,
+                "Message": `Credential successfully removed for cred_id ${credential_id}`,
+                "RemovedId": credential_id
+            };
+
+            resolve(r_msg);
+        }).catch((error)=>{
+            support.log("error", "p_credential.js - remove_credential : Unable to create remove Credential db.promise_pool failed to service the query")
+
+            reject(error);
+
+        })
 
     });
 };
