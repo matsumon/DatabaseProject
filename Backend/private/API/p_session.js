@@ -16,15 +16,8 @@ async function create_session(package) {
 
             //Create a Session Token
             // note: session init components below are generated randomly on request, making the targeted generation of colliding tokens impossible
-            const random_iv = crypto.randomBytes(25).toString('base64').slice(0, 25)        // generates a 25char length random IV for crypto.createHmac(sha256)
-            const random_secret = crypto.randomBytes(60).toString('base64').slice(0,60);    // generates a 60char random secret for crypto.createHmac(sha256) 
-            const time_secret_value = support.getBasicDate() + random_iv + random_secret;   // ties our random value generations to the time of request making
-                                                                                            //      our token derivation time dependant and harder compute
-            // generate our token from a SHA256 hash of the iv and secret
-            const token = crypto.createHmac('sha256', random_iv)
-                .update(time_secret_value)
-                .digest('hex');
-
+            
+            const token = support.create_sessionToken();
             // Create the query string to generate the session
 
             const session_creation_query = `INSERT into ${config.db_rootDatabase}.session
@@ -84,8 +77,7 @@ async function update_session(package) {
         support.log("debug", "p_session.js - update_session : updating session");
 
         // verify we have required data to manage the request
-        if (package.hasOwnProperty('id') &&
-            package.hasOwnProperty('email_addr')) {
+        if (package.hasOwnProperty('id')) {
 
 
         } else {
