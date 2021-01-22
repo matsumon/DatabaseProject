@@ -14,9 +14,21 @@ async function create_session(){
     });
 };
 
-async function update_session(){};
+async function update_session(package){
+    return new Promise((resolve,reject)=>{
+        support.log("error", "p_session.js - update_session : updating session");
 
-async function remove_session(){}}
+
+    });
+};
+
+async function remove_session(session_id){
+    return new Promise((resolve,reject)=>{
+        support.log("error", "p_session.js - remove_session : removing session");
+
+
+    });
+};
 
 
 
