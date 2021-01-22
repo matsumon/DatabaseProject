@@ -230,7 +230,7 @@ async function update_credential(package) {
         } else {
             const r_msg = {
                 "status": 0,
-                "Message": "Can NOT update credential insufficient information to preform request",
+                "Message": "Can NOT update credential, insufficient information to preform request",
             };
             reject(r_msg);
         }
