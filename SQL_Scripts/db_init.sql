@@ -17,12 +17,7 @@ CREATE TABLE `role` (
 
 CREATE TABLE `action` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `logon` boolean,
-  `update` boolean,
-  `auth` boolean,
-  `validate` boolean,
-  `super` boolean,
-  `special` boolean
+  'action_name' varchar(255) UNIQUE NOT NULL
 );
 
 CREATE TABLE `role_to_action` (
