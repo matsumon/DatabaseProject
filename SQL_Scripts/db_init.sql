@@ -17,7 +17,7 @@ CREATE TABLE `role` (
 
 CREATE TABLE `action` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  'action_name' varchar(255) UNIQUE NOT NULL
+  `action_name` varchar(255) UNIQUE NOT NULL
 );
 
 CREATE TABLE `role_to_action` (
