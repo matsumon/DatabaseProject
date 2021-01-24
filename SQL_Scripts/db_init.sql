@@ -6,7 +6,7 @@ USE cs340_matsumon; /* Select our target DB to create these tables in*/
 CREATE TABLE `user` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `username` varchar(50) UNIQUE NOT NULL,
-  `created_at` timestamp NOT NULL,
+  `created_at` datetime NOT NULL,
   `email` varchar(255)
 );
 
@@ -37,10 +37,9 @@ CREATE TABLE `user_to_credential` (
 
 CREATE TABLE `credential` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `hash` varchar(255) NOT NULL,
-  `salt` varchar(255) NOT NULL,
-  `exp_date` timestamp NOT NULL,
-  `created_date` timestamp NOT NULL,
+  `hash` varchar(255),
+  `exp_date` datetime NOT NULL,
+  `created_date` datetime NOT NULL,
   `enabled` boolean NOT NULL
 );
 
@@ -50,7 +49,7 @@ CREATE TABLE `session` (
   `token` varchar(255) UNIQUE NOT NULL,
   `exp_date` datetime NOT NULL,
   `user_req_date` datetime NOT NULL,
-  `created_at` timestamp NOT NULL
+  `created_at` datetime NOT NULL
 );
 
 CREATE TABLE `user_to_role` (
