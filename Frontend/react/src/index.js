@@ -10,6 +10,10 @@ import {
 import './index.css';
 import LogIn from './LogIn';
 import User from './User';
+import Session from './Session';
+import Role from './Role';
+import Action from './Action';
+import Credential from './Credential';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
@@ -20,8 +24,17 @@ ReactDOM.render(
           <Route exact path="/home">
             <User />
           </Route>
-          <Route exact path="/editUser">
-            <LogIn />
+          <Route exact path="/Sessions/:userId">
+            <Session />
+          </Route>
+          <Route exact path="/Roles/:userId">
+            <Role />
+          </Route>
+          <Route exact path="/Actions/:userId">
+            <Action />
+          </Route>
+          <Route exact path="/Credentials/:userId">
+            <Credential />
           </Route>
           <Route exact path="/">
             <LogIn />
