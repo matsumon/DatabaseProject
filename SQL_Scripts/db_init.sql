@@ -30,8 +30,8 @@ CREATE TABLE `credential` (
   `hash` varchar(255),
   `exp_date` datetime NOT NULL,
   `created_date` datetime NOT NULL,
-  `enabled` boolean NOT NULL
-  `user_id` int NOT NULL,
+  `enabled` boolean NOT NULL,
+  `user_id` int NOT NULL
 );
 
 CREATE TABLE `session` (
