@@ -25,17 +25,13 @@ CREATE TABLE `role_to_action` (
   `action_id` int
 );
 
-CREATE TABLE `user_to_credential` (
-  `user_id` int,
-  `credential_id` int
-);
-
 CREATE TABLE `credential` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `hash` varchar(255),
   `exp_date` datetime NOT NULL,
   `created_date` datetime NOT NULL,
   `enabled` boolean NOT NULL
+  `user_id` int NOT NULL,
 );
 
 CREATE TABLE `session` (
@@ -56,7 +52,7 @@ ALTER TABLE `role_to_action` ADD FOREIGN KEY (`role_id`) REFERENCES `role` (`id`
 
 ALTER TABLE `role_to_action` ADD FOREIGN KEY (`action_id`) REFERENCES `action` (`id`);
 
-ALTER TABLE `user_to_credential` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+ALTER TABLE `credential` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 
 ALTER TABLE `session` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 
