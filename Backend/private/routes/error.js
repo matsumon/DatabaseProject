@@ -15,5 +15,7 @@ module.exports = function (app) {
         var response = "500 - Server unable to process request at this time" + time;
         res.status(500);                   // Set Reply Status
         res.send(response);                // Send 500 Error
+
+        support.log("debug", "HTTP 500 - ERROR sent, unable to service requested operation or other failure occurred");
     });
 }
