@@ -6,5 +6,5 @@
 **/bin/**
 **/node_modules/**
 
-# remove Runtime_Log directories
-**/App_Log/**
+# remove log files
+/App_Log/**

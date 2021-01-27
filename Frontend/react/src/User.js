@@ -1,245 +1,202 @@
-import React, { useState } from 'react';
-import { Table, Input, InputNumber, Popconfirm, Form, Typography } from 'antd';
+import { Table, Button, Typography, Input, Popconfirm, message } from 'antd';
+import {useState} from 'react';
+import {
+  useHistory
+} from "react-router-dom";
+import _ from "lodash";
+import 'antd/dist/antd.css';
 
-function User () {
-const originData = [];
-
-for (let i = 0; i < 100; i++) {
-  originData.push({
-    key: i.toString(),
-    name: `Edrward ${i}`,
-    age: 32,
-    address: `London Park no. ${i}`,
-  });
-}
-
-const EditableCell = ({
-  editing,
-  dataIndex,
-  title,
-  inputType,
-  record,
-  index,
-  children,
-  ...restProps
-}) => {
-  const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
-  return (
-    <td {...restProps}>
-      {editing ? (
-        <Form.Item
-          name={dataIndex}
-          style={{
-            margin: 0,
-          }}
-          rules={[
-            {
-              required: true,
-              message: `Please Input ${title}!`,
-            },
-          ]}
-        >
-          {inputNode}
-        </Form.Item>
-      ) : (
-        children
-      )}
-    </td>
-  );
-};
-
-const EditableTable = () => {
-  const [form] = Form.useForm();
-  const [data, setData] = useState(originData);
-  const [editingKey, setEditingKey] = useState('');
-
-  const isEditing = (record) => record.key === editingKey;
-
-  const edit = (record) => {
-    form.setFieldsValue({
-      name: '',
-      age: '',
-      address: '',
-      ...record,
-    });
-    setEditingKey(record.key);
-  };
-
-  const cancel = () => {
-    setEditingKey('');
-  };
-
-  const save = async (key) => {
-    try {
-      const row = await form.validateFields();
-      const newData = [...data];
-      const index = newData.findIndex((item) => key === item.key);
-
-      if (index > -1) {
-        const item = newData[index];
-        newData.splice(index, 1, { ...item, ...row });
-        setData(newData);
-        setEditingKey('');
-      } else {
-        newData.push(row);
-        setData(newData);
-        setEditingKey('');
-      }
-    } catch (errInfo) {
-      console.log('Validate Failed:', errInfo);
+const { Column } = Table;
+function User() {
+  console.log("RENDER");
+    const { Title } = Typography;
+    const history = useHistory();
+    const [edit,setEdit]=useState(-1);
+    const [username,setUsername]=useState("");
+    const [created,setCreated]=useState("");
+    const [email,setEmail]=useState("");
+    const [render,setRender]=useState(false);
+    const [deleteEdit,setDeleteEdit]=useState(-1);
+    const [rawData,setRawData]= useState([
+      {username: "Mike",created:"1/2/21", email:"blahblah@gmail.com"},
+      {username: "Lucy",created:"21/2/31", email:"dsfadsa@gmail.com"},
+      {username: "Will",created:"1/123/21", email:"asdfdf@gmail.com"}
+    ]);
+    const [deleted,setDeleted]=useState([]);
+  // console.log(rawData);
+  function deleteConfirm(e){
+    // let temporaryRawData= rawData;
+    // console.log(temporaryRawData)
+    // temporaryRawData.splice(e,1);
+    // console.log(temporaryRawData)
+    // setRawData(temporaryRawData);
+    // // setRawData(temporaryRawData);
+    // setDeleteEdit(-1);
+    // let temporaryData=_.map(rawData,(object,index)=>{
+    //   // console.log(object)
+    //   if(index!==e){
+    //     return object
+    //   }
+    //   return null;
+    // })
+    // console.log(_.compact(temporaryData))
+    setDeleteEdit(-1);
+    let copy = deleted
+    copy.push(e)
+    setDeleted(copy)
+    // setRawData(_.compact(temporaryData))
+    setRender(!render)
+  }
+  function deleteCancel(e){
+    setDeleteEdit(-1);
+  }
+    function confirm(e) {
+      message.success('Click on Yes');
+      let tempRawData = rawData;
+      tempRawData[e].username= username;
+      tempRawData[e].created= created;
+      tempRawData[e].email= email;
+      setRawData(tempRawData);
+      setUsername("");
+      setCreated("");
+      setEmail("");
+      setEdit(-1);
     }
-  };
-
-  const columns = [
-    {
-      title: 'name',
-      dataIndex: 'name',
-      width: '25%',
-      editable: true,
-    },
-    {
-      title: 'age',
-      dataIndex: 'age',
-      width: '15%',
-      editable: true,
-    },
-    {
-      title: 'address',
-      dataIndex: 'address',
-      width: '40%',
-      editable: true,
-    },
-    {
-      title: 'operation',
-      dataIndex: 'operation',
-      render: (_, record) => {
-        const editable = isEditing(record);
-        return editable ? (
-          <span>
-            <a
-              href="javascript:;"
-              onClick={() => save(record.key)}
-              style={{
-                marginRight: 8,
-              }}
+    function cancel(e) {
+      message.success('Click on Cancel');
+      setUsername("");
+      setCreated("");
+      setEmail("");
+      setEdit(-1);
+    }
+    function createDataSource(){
+      console.log("RUNNING")
+      return _.map(rawData,(object,index)=>{
+        let skip=false
+        _.map(deleted,(value)=>{
+          if(value===index){
+            skip=true
+          } 
+        })
+        if(!skip){
+        return {
+          key : index,
+          username: <Input 
+                      onChange={(newValue)=>{setUsername(newValue.currentTarget.value);}} 
+                      disabled={index !== edit} 
+                      defaultValue={object.username}
+                    />,
+          created: <Input 
+                      onChange={(newValue)=>{setCreated(newValue.currentTarget.value); }} 
+                      disabled={index !==edit} 
+                      defaultValue={object.created}
+                    />,
+          email: <Input 
+                    onChange={(newValue)=>{setEmail(newValue.currentTarget.value);}} 
+                    disabled={index !==edit} 
+                    defaultValue={object.email}
+                  />,
+          edit: 
+          <div>
+            <Button 
+              onClick={()=>{history.push(`/Sessions/:${index}`)}}
             >
-              Save
-            </a>
-            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <a>Cancel</a>
-            </Popconfirm>
-          </span>
-        ) : (
-          <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-            Edit
-          </Typography.Link>
-        );
-      },
-    },
-  ];
-  const mergedColumns = columns.map((col) => {
-    if (!col.editable) {
-      return col;
+              Sessions
+            </Button>
+            <Button 
+              onClick={()=>{history.push(`/Roles/:${index}`)}}
+            >
+              Roles
+            </Button>
+            <Button 
+              onClick={()=>{history.push(`/Actions/:${index}`)}}
+            >
+              Available Actions
+            </Button>
+            <Button 
+              onClick={()=>{history.push(`/Credentials/:${index}`)}}
+            >
+              Credentials
+            </Button>
+           
+              <Popconfirm 
+                okText="Save To Database"
+                cancelText="Don't Save To Database"
+                visible={index===edit} 
+                onConfirm={()=>confirm(index)} 
+                onCancel={()=>cancel(index)}
+                title="Proceed with Caution"
+              > 
+                <Button 
+                  disabled={index === edit || edit !== -1}
+                  onClick={()=>{
+                    setEdit(index)
+                  }}
+                >
+                  Edit
+                </Button>
+              </Popconfirm>
+              <Popconfirm 
+                okText="Confirm"
+                cancelText="No"
+                visible={index===deleteEdit} 
+                onConfirm={()=>deleteConfirm(index)} 
+                onCancel={()=>deleteCancel(index)}
+                title="Proceed with Caution"
+              > 
+                <Button 
+                  disabled={index === deleteEdit || deleteEdit !== -1}
+                  onClick={()=>{
+                    // console.log("INDEx",index)
+                    setDeleteEdit(index)
+                  }}
+                >
+                  Delete
+                </Button>
+              </Popconfirm>
+            
+            </div>
+        }
+      }
+      return null
+      });
     }
+    // dataSource=createDataSource(rawData);
+    // console.log(dataSource)
+    function addUserToTable (){ 
+      let index =rawData.length;
+      let tempRawData = rawData
+      tempRawData.push({username: "",created:"", email:""});
+      setRawData(tempRawData);
+      setRender(!render);
+    }
+    let dataToBeUsed= []
+    dataToBeUsed=createDataSource()
+    console.log("delete",deleted)
+    _.forEach(deleted,(index,iterator)=>{
+      if(index===iterator){
+        dataToBeUsed[index]= null;
+      } 
+    })
+    console.log(dataToBeUsed,deleted)
+    // dataToBeUsed=_.compact(dataToBeUsed)
+    // console.log(dataToBeUsed[0].username.props.defaultValue)
+    // console.log(dataToBeUsed[dataToBeUsed.length-1].username.props.defaultValue)
 
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        inputType: col.dataIndex === 'age' ? 'number' : 'text',
-        dataIndex: col.dataIndex,
-        title: col.title,
-        editing: isEditing(record),
-      }),
-    };
-  });
   return (
-    <Form form={form} component={false}>
-      <Table
-        components={{
-          body: {
-            cell: EditableCell,
-          },
-        }}
-        bordered
-        dataSource={data}
-        columns={mergedColumns}
-        rowClassName="editable-row"
-        pagination={{
-          onChange: cancel,
-        }}
-      />
-    </Form>
-  );
-};
+      <div style={{ width: "100%", height: "100%" }}>
+        <Title style={{margin:"auto", width:"fit-content"}}>Users</Title>
+        <Table style={{width:"auto"}} dataSource={dataToBeUsed}>
+            <Column title="Username" dataIndex="username" key="username" />
+            <Column title="Created" dataIndex="created" key="created" />
+            <Column title="Email" dataIndex="email" key="email" />
+            <Column title="Action" dataIndex="edit" key="edit" />
+        </Table>;
+        <Button onClick={addUserToTable}>
+          Add User
+        </Button>
+      </div>
+    );
 }
-
-
-// import { Table, Button, Typography } from 'antd';
-// import {useState} from 'react';
-// import {
-//   useHistory
-// } from "react-router-dom";
-// import { unmountComponentAtNode } from 'react-dom';
-
-// import logo from './logo.svg';
-
-// // import './App.css';
-// import 'antd/dist/antd.css';
-
-// const { Column, ColumnGroup } = Table;
-// function User() {
-//     const { Title } = Typography;
-//     const history = useHistory();
-//     const dataSource = [
-//         {
-//           key: '1',
-//           username: 'Mike',
-//           email: "blah@oregonstate.edu",
-//           edit: 
-//           <div>
-//             <Button 
-//               onClick={()=>{history.push("/Sessions/:1")}}
-//             >
-//               Sessions
-//             </Button>
-//             <Button 
-//               onClick={()=>{history.push("/Roles/:1")}}
-//             >
-//               Roles
-//             </Button>
-//             <Button 
-//               onClick={()=>{history.push("/Actions/:1")}}
-//             >
-//               Available Actions
-//             </Button>
-//             <Button 
-//               onClick={()=>{history.push("/Credentials/:1")}}
-//             >
-//               Credentials
-//             </Button>
-//             </div>
-//         },
-//         {
-//           key: '2',
-//           username: 'John',
-//           email: "blah@gmail.com",
-//           edit: <div><Button>Edit</Button> <Button>View History</Button></div>
-//         },
-//       ];
-      
-//   const [username, setUsername] = useState("");
-//   return (
-//       <div style={{ width: "100%", height: "100%" }}>
-//         <Title style={{margin:"auto", width:"fit-content"}}>Edit Users</Title>
-//         <Table style={{width:"auto"}} dataSource={dataSource}>
-//             <Column title="Username" dataIndex="username" key="username" />
-//             <Column title="Email" dataIndex="email" key="email" />
-//             <Column title="Created" dataIndex="createdAt" key="createdAt" />
-//             <Column title="" dataIndex="edit" key="edit" />
-//         </Table>;
-//       </div>
-//     );
-// }
 
 export default User;
