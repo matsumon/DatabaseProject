@@ -4,7 +4,6 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
 } from "react-router-dom";
 
 import './index.css';
@@ -19,9 +18,8 @@ import reportWebVitals from './reportWebVitals';
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-    {/* <App /> */}
     <Switch>
-          <Route exact path="/home">
+          <Route exact path="/Users">
             <User />
           </Route>
           <Route exact path="/Sessions/:userId">
@@ -39,12 +37,6 @@ ReactDOM.render(
           <Route exact path="/">
             <LogIn />
           </Route>
-          {/* <Route path="/about">
-            <About />
-          </Route>
-          <Route path="/dashboard">
-            <Dashboard />
-          </Route> */}
         </Switch>
     </Router>
   </React.StrictMode>,

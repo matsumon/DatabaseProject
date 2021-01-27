@@ -1,4 +1,4 @@
-import { Table, Button, Typography, Input, Popconfirm, message } from 'antd';
+import { Table, Button, Typography, Input, Popconfirm } from 'antd';
 import {useState} from 'react';
 import {
   useHistory
@@ -6,52 +6,55 @@ import {
 import _ from "lodash";
 import 'antd/dist/antd.css';
 
-const { Column } = Table;
 function User() {
+  const { Column } = Table;
   console.log("RENDER");
-    const { Title } = Typography;
-    const history = useHistory();
-    const [edit,setEdit]=useState(-1);
-    const [username,setUsername]=useState("");
-    const [created,setCreated]=useState("");
-    const [email,setEmail]=useState("");
-    const [render,setRender]=useState(false);
-    const [deleteEdit,setDeleteEdit]=useState(-1);
-    const [rawData,setRawData]= useState([
-      {username: "Mike",created:"1/2/21", email:"blahblah@gmail.com"},
-      {username: "Lucy",created:"21/2/31", email:"dsfadsa@gmail.com"},
-      {username: "Will",created:"1/123/21", email:"asdfdf@gmail.com"}
-    ]);
-    const [deleted,setDeleted]=useState([]);
-  // console.log(rawData);
+  const { Title } = Typography;
+  const history = useHistory();
+  // The edit variable tells which component is allowed to edit its contents
+  const [edit,setEdit]=useState(-1);
+  const [username,setUsername]=useState("");
+  const [created,setCreated]=useState("");
+  const [email,setEmail]=useState("");
+  // State variable to trigger a re-render of component
+  const [render,setRender]=useState(false);
+  // The delete variable tells which component is allowed to delete its contents
+  const [deleteEdit,setDeleteEdit]=useState(-1);
+  /**
+   * This data is held in a state variable so that it wont reset every time the component
+   * is re-rendered. This data represents the current state of data in sql
+   */
+  const [rawData,setRawData]= useState([
+    {id: 1, username: "Mike",created:"1/2/21", email:"blahblah@gmail.com"},
+    {id: 2, username: "Lucy",created:"21/2/31", email:"dsfadsa@gmail.com"},
+    {id: 3, username: "Will",created:"1/123/21", email:"asdfdf@gmail.com"}
+  ]);
+  /**
+   * This state has to exist because antd's table is having issues when the
+   * data being fed to it has a deletion. This variable holds the indexes of
+   * the raw data that has been deleted.
+   */
+  const [deleted,setDeleted]=useState([]);
+  /**
+   * This function resets the delete edit variable and adds the 
+   * deleted index to the deleted state variable
+   **/
   function deleteConfirm(e){
-    // let temporaryRawData= rawData;
-    // console.log(temporaryRawData)
-    // temporaryRawData.splice(e,1);
-    // console.log(temporaryRawData)
-    // setRawData(temporaryRawData);
-    // // setRawData(temporaryRawData);
-    // setDeleteEdit(-1);
-    // let temporaryData=_.map(rawData,(object,index)=>{
-    //   // console.log(object)
-    //   if(index!==e){
-    //     return object
-    //   }
-    //   return null;
-    // })
-    // console.log(_.compact(temporaryData))
     setDeleteEdit(-1);
     let copy = deleted
     copy.push(e)
     setDeleted(copy)
-    // setRawData(_.compact(temporaryData))
     setRender(!render)
   }
+  //Resets state variable on cancelation of delete
   function deleteCancel(e){
     setDeleteEdit(-1);
   }
+  /**
+   * This function saves the updated row to the raw state variables 
+   * and resets the username,created,email, and edit varibles.
+   */
     function confirm(e) {
-      message.success('Click on Yes');
       let tempRawData = rawData;
       tempRawData[e].username= username;
       tempRawData[e].created= created;
@@ -62,25 +65,31 @@ function User() {
       setEmail("");
       setEdit(-1);
     }
+  //Resets state variable on cancelation of edit
     function cancel(e) {
-      message.success('Click on Cancel');
       setUsername("");
       setCreated("");
       setEmail("");
       setEdit(-1);
     }
+    /**
+     * This function creates the data packet for antd's table. Because
+     * the table is having issues we have to set deleted rows to null.
+     */
     function createDataSource(){
-      console.log("RUNNING")
       return _.map(rawData,(object,index)=>{
         let skip=false
+        // if the index is in the deleted state array then null is returned
         _.map(deleted,(value)=>{
           if(value===index){
             skip=true
           } 
         })
+        // Otherwise data is used to populate the component.
         if(!skip){
         return {
           key : index,
+          id: object.id,
           username: <Input 
                       onChange={(newValue)=>{setUsername(newValue.currentTarget.value);}} 
                       disabled={index !== edit} 
@@ -147,7 +156,6 @@ function User() {
                 <Button 
                   disabled={index === deleteEdit || deleteEdit !== -1}
                   onClick={()=>{
-                    // console.log("INDEx",index)
                     setDeleteEdit(index)
                   }}
                 >
@@ -161,37 +169,35 @@ function User() {
       return null
       });
     }
-    // dataSource=createDataSource(rawData);
-    // console.log(dataSource)
+    /** 
+     * This function adds users to the table.
+     * Because react only does shallow checks on object, we have to manually
+     * retrigger a render using the render state variable. This isn't
+     * the best programming practice, but oh well.
+     */
     function addUserToTable (){ 
-      let index =rawData.length;
       let tempRawData = rawData
-      tempRawData.push({username: "",created:"", email:""});
+      tempRawData.push({id: "",username: "",created:"", email:""});
       setRawData(tempRawData);
       setRender(!render);
     }
     let dataToBeUsed= []
     dataToBeUsed=createDataSource()
-    console.log("delete",deleted)
     _.forEach(deleted,(index,iterator)=>{
       if(index===iterator){
         dataToBeUsed[index]= null;
       } 
     })
-    console.log(dataToBeUsed,deleted)
-    // dataToBeUsed=_.compact(dataToBeUsed)
-    // console.log(dataToBeUsed[0].username.props.defaultValue)
-    // console.log(dataToBeUsed[dataToBeUsed.length-1].username.props.defaultValue)
-
   return (
       <div style={{ width: "100%", height: "100%" }}>
         <Title style={{margin:"auto", width:"fit-content"}}>Users</Title>
         <Table style={{width:"auto"}} dataSource={dataToBeUsed}>
+            <Column title="ID" dataIndex="id" key="id" />
             <Column title="Username" dataIndex="username" key="username" />
             <Column title="Created" dataIndex="created" key="created" />
             <Column title="Email" dataIndex="email" key="email" />
             <Column title="Action" dataIndex="edit" key="edit" />
-        </Table>;
+        </Table>
         <Button onClick={addUserToTable}>
           Add User
         </Button>

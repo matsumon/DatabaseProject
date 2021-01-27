@@ -3,11 +3,7 @@ import {useState} from 'react';
 import {
   useHistory
 } from "react-router-dom";
-import { unmountComponentAtNode } from 'react-dom';
 
-import logo from './logo.svg';
-
-// import './App.css';
 import 'antd/dist/antd.css';
 
 const { Option } = Select;
@@ -18,7 +14,7 @@ function LogIn() {
   const [password, setPassword] = useState("");
   const [userRole, setUserRole] = useState("");
   function handleLogIn(){
-    history.push("/home");
+    history.push("/Users");
     console.log(history)
   }
   return (
