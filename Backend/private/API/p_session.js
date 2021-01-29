@@ -77,7 +77,35 @@ async function update_session(package) {
         support.log("debug", "p_session.js - update_session : updating session");
 
         // verify we have required data to manage the request
-        if (package.hasOwnProperty('id')) {
+        if (package.hasOwnProperty('id')&&
+            package.hasOwnProperty('exp_date')) {
+
+                const update_session_query=`UPDATE ${config.db_rootDatabase}.session
+                SET
+                exp_date = "${package.exp_date}",
+                WHERE
+                id = ${package.id};`
+
+                db.promise_pool.query(update_session_query).then(()=>{
+                    support.log("debug", "p_credential.js - update_session : updated session")
+
+                    const r_msg = {
+                        "status": 1,
+                        "Message": "Credential updated",
+                    };
+
+                    resolve(r_msg);
+
+
+                }).catch((error)=>{
+                    support.log("error", "p_session.js - update_session : Unable to update Session db.promise_pool failed to service the query")
+                    const r_msg = {
+                        "status": 0,
+                        "Message": "Can NOT update session insufficient information to preform request",
+                        "error" : error
+                    };
+
+                    reject(r_msg););
 
 
         } else {

@@ -204,11 +204,11 @@ async function update_credential(package) {
                 id = ${package.id};`
 
                 db.promise_pool.query(update_credential_query).then(()=>{
-                    support.log("debug", "p_credential.js - remove_credential : removed Credential")
+                    support.log("debug", "p_credential.js - update_credential : updated Credential")
 
                     const r_msg = {
                         "status": 1,
-                        "Message": "Credential removed",
+                        "Message": "Credential updated",
                     };
 
                     resolve(r_msg);
