@@ -16,7 +16,7 @@ async function parse_http_JsonBody(req) {
         });
         }
         catch{
-            support.log("error", "p_support.js - parse_http_JsonBody : Can NOT parse HTTP JSON BODY, unknown error");
+            support.log("error", "route_api_ingest_support.js - parse_http_JsonBody : Can NOT parse HTTP JSON BODY, unknown error");
 
             const r_msg = {
                 "status": 0,
@@ -28,18 +28,33 @@ async function parse_http_JsonBody(req) {
 
     });
 
-}
+};
 
 async function evaluate_API_request(json_api_request){
-    return new promise((resolve, reject) => {
-        
-        // look at operation_name field, test for required content for the given operation type.
-        // send request data to proper support operation.
-        
-        
+    support.log("debug", `route_api_ingest_support.js - evaluate_API_request : Evaluating the API request for routing to proper functions : \n ${JSON.stringify(json_api_request)}`)
+    return new Promise((resolve, reject) => {
+        support.log("debug", `route_api_ingest_support.js - evaluate_API_request : Evaluating the API request for routing to proper functions : \n ${JSON.stringify(json_api_request)}`)
+        switch(json_api_request.operation_name){
+            case 'LOGON':
+                support.log("debug", `route_api_ingest_support.js - evaluate_API_request : LOGON REQUEST, Routing to Logon Handler`)
+                // Send info to logon stuff
+
+                break;
+                
+            default :
+                support.log("Error", `route_api_ingest_support.js - evaluate_API_request : Unknown Request Type`)
+                const r_msg = {
+                    "status": 0,
+                    "Message": "Unknown Request Type",
+                };
+                reject(r_msg);
+
+        }
+
+        resolve(json_api_request)
+
     });
-    
-}
+};
 
 //export required module components
 module.exports.parse_http_JsonBody = parse_http_JsonBody;

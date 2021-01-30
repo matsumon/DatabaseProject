@@ -35,18 +35,17 @@ module.exports = function (app) {
 
             support.log("debug", `API Request Parsed Result is : ${JSON.stringify(json_body)}`)
 
-
-            // evaluate request type
-
-            // foreword request to proper servicing agent
-
-
-
             support.log("debug", "API Request Processed Delivering Results if required")
+            
+
+            p_support.evaluate_API_request(json_body);
+
+            
             res.status(200);
-            var time = support.getBasicDate(); // Create time stamp for incident
-            var response = "HTTP 200 - OK : API REQUEST RECEIVED - " + time;
+            const response = `HTTP 200 - OK : API REQUEST RECEIVED -  ${support.getBasicDate()} \n ${JSON.stringify(json_body)}`;
             res.send(response);
+            
+
 
 
         }).catch((error) =>{
