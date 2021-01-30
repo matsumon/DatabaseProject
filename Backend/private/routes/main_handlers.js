@@ -1,7 +1,10 @@
 const support = require('../support.js'); // import support functions
+const p_support = require('./route_api_ingest_support.js'); // import support functions
+
+
 
 module.exports = function (app) {
-    //#region main page GET Request Handler
+    //#region main page GET Request Handler{}
     app.get('/', function (req, res) {
         res.status(200);
         var time = support.getBasicDate(); // Create time stamp for incident
@@ -25,48 +28,40 @@ module.exports = function (app) {
     });
     //#endregion
     //#region API Handler
-    app.post('/api', function (req, res) {
+    app.post('/API/', function (req, res) {
         support.log("debug", "API Request received, processing request...")
 
-        // verify request has required properties for execution
-        if (req.body.hasOwnProperty('username') &&
-            req.body.hasOwnProperty('token') &&
-            req.body.hasOwnProperty('operation_name') &&
-            req.body.hasOwnProperty('task_data')) {
+        p_support.parse_http_JsonBody(req).then((json_body) => {
 
-            if (req.body.operation_name == "Logon" &&
-                req.body.token == null
-            ) {
-                // send stuff to logon handler w/ the req and res data
+            support.log("debug", `API Request Parsed Result is : ${JSON.stringify(json_body)}`)
 
 
-            } else if (req.body.token != null) {
-                // verify username and token
-                // send stuff to proper handler w/ req and res data
+            // evaluate request type
 
-
-            } else {
-                // handle properly structured api request missing mandatory information
-                res.status(400);
-                const response = `You have provided a improperly formatted request, request denied - Request Data : \n ${req.body}`
-                res.send(response);
-                support.log("debug", `HTTP 400 - BAD API REQUEST LOGGED - REQ BODY : \n ${req.body}`);
-
-            }
+            // foreword request to proper servicing agent
 
 
 
-        } else {
-
-            //handle improperly structure api request information
-            res.status(400);
-            const response = `You have provided a improperly formatted request, request denied - Request Data : \n ${req.body}`
+            support.log("debug", "API Request Processed Delivering Results if required")
+            res.status(200);
+            var time = support.getBasicDate(); // Create time stamp for incident
+            var response = "HTTP 200 - OK : API REQUEST RECEIVED - " + time;
             res.send(response);
-            support.log("debug", `HTTP 400 - BAD API REQUEST LOGGED - REQ BODY : \n ${req.body}`);
-        }
+
+
+        }).catch((error) =>{
+
+            support.log("error", `main_handlers.js - app.post(/API/) : Error Executing API request. Message as follows : ${error}`)
+
+            res.status(500);
+            var time = support.getBasicDate(); // Create time stamp for incident
+            var response = "HTTP 500 - SERVER ERROR : API REQUEST RECEIVED, UNABLE TO PROCESS DUE TO SERVER ERROR- " + time;
+            res.send(response);
+
+
+        });
 
     });
-
-    //#endregion
+    //#endregion;
 
 }
