@@ -1,7 +1,7 @@
 //import all required support functionality
 const config = require('../../init_config.json');
 const support = require('../support.js');
-const db = require('../Database/database_access.js');
+const db = require('./database_access.js');
 const crypto = require('crypto'); // import cryptographic support to allow us to generate fast HMACS for secure session tokens
 
 
