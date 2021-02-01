@@ -2,7 +2,6 @@
 const config = require('../../init_config.json');
 const support = require('../support.js');
 const db = require('./database_access.js');
-const crypto = require('crypto'); // import cryptographic support to allow us to generate fast HMACS for secure session tokens
 
 
 //define required functions
@@ -40,8 +39,8 @@ async function create_session(package) {
 
                 const r_msg = {
                     "status": 1,
-                    "Message": `Session successfully created for user_id ${package.user_id}`,
-                    "insertId": rows[0].insertId
+                    "Message": `Session successfully created for user!`,
+                    "token" : `${token}`
                 };
 
                 // resolve returning the data package containing the details
@@ -105,15 +104,15 @@ async function update_session(package) {
                         "error" : error
                     };
 
-                    reject(r_msg););
-
-
-        } else {
+                    reject(r_msg);
+                })
+        }else {
             // handle insufficient data to manage request error 
             const r_msg = {
                 "status": 0,
-                "Message": "Can NOT Update requested session, insufficient information to preform request",
-            };
+                "Message": "Can NOT Update requested session, insufficient information to preform request"
+            }
+
             reject(r_msg);
 
         }

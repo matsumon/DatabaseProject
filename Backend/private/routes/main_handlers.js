@@ -37,16 +37,8 @@ module.exports = function (app) {
 
             support.log("debug", "API Request Parsed, Evaluating Request for Proper Handling")
             
-
-            p_support.evaluate_API_request(json_body);
-
-
-
-            // ultimately respond to our requestor
-            res.status(200);
-            const response = `HTTP 200 - OK : API REQUEST RECEIVED -  ${support.getBasicDate()} \n ${JSON.stringify(json_body)}`;
-            res.send(response);
-            
+            // evaluate the request and reply if needed
+            p_support.evaluate_API_request(json_body, res);
 
 
 
