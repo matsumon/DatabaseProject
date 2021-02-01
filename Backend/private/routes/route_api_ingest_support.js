@@ -67,6 +67,12 @@ async function evaluate_API_request(json_api_request, res) {
                 break;
 
             default:
+
+                res.status(400);
+                const response = `HTTP 400 - API REQUEST RECEIVED, HOWEVER REQUESTED ACTION IS NOT SUPPORTED OR UNDERSTOOD BY THE SERVER- ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                res.send(response);
+
+
                 support.log("Error", `route_api_ingest_support.js - evaluate_API_request : Unknown Request Type`)
                 const r_msg = {
                     "status": 0,
