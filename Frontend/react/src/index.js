@@ -28,7 +28,7 @@ ReactDOM.render(
           <Route exact path="/Roles/:userId">
             <Role />
           </Route>
-          <Route exact path="/Actions/:userId">
+          <Route exact path="/Actions/:userId/:actionId?">
             <Action />
           </Route>
           <Route exact path="/Credentials/:userId">

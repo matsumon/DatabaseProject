@@ -1,7 +1,8 @@
-import { Table, Button, Typography, Input, Popconfirm } from 'antd';
+import { Table, Button, Typography, Input,InputNumber, message, DatePicker, Card } from 'antd';
 import {useState} from 'react';
 import {
-  useHistory
+  useHistory,
+  useParams
 } from "react-router-dom";
 import _ from "lodash";
 import 'antd/dist/antd.css';
@@ -11,8 +12,6 @@ function Session() {
   console.log("RENDER");
   const { Title } = Typography;
   const history = useHistory();
-  // The edit variable tells which component is allowed to edit its contents
-  const [edit,setEdit]=useState(-1);
   const [userID,setUserID]=useState("");
   const [token,setToken]=useState("");
   const [expired,setExpired]=useState("");
@@ -20,8 +19,8 @@ function Session() {
   const [created,setCreated]=useState("");
   // State variable to trigger a re-render of component
   const [render,setRender]=useState(false);
-  // The delete variable tells which component is allowed to delete its contents
-  const [deleteEdit,setDeleteEdit]=useState(-1);
+  const urlUserID= useParams("userId").userId;
+  console.log("urlUserID",urlUserID)
   /**
    * This data is held in a state variable so that it wont reset every time the component
    * is re-rendered. This data represents the current state of data in sql
@@ -31,98 +30,31 @@ function Session() {
     {id: 2, userID: 2,token:"asdfdas312dsf", expired:"3/4/21",requested:"1/2/22",created: "9/2/12"},
     {id: 3, userID: 6,token:"asdfsdaf32", expired:"1/29/21",requested:"1/12/22",created: "21/2/12"}
   ]);
-  /**
-   * This state has to exist because antd's table is having issues when the
-   * data being fed to it has a deletion. This variable holds the indexes of
-   * the raw data that has been deleted.
-   */
-  const [deleted,setDeleted]=useState([]);
-  /**
-   * This function resets the delete edit variable and adds the 
-   * deleted index to the deleted state variable
-   **/
-  function deleteConfirm(e){
-    setDeleteEdit(-1);
-    let copy = deleted
-    copy.push(e)
-    setDeleted(copy)
-    setRender(!render)
-  }
-  //Resets state variable on cancelation of delete
-  function deleteCancel(e){
-    setDeleteEdit(-1);
-  }
-  /**
-   * This function saves the updated row to the raw state variables 
-   * and resets the username,created,email, and edit varibles.
-   */
-    function confirm(e) {
-      let tempRawData = rawData;
-      tempRawData[e].userID= userID;
-      tempRawData[e].created= created;
-      tempRawData[e].expired= expired;
-      tempRawData[e].requested= requested;
-      tempRawData[e].token= token;
-      setRawData(tempRawData);
-      setUserID("");
-      setCreated("");
-      setRequested("");
-      setExpired("");
-      setToken("");
-      setEdit(-1);
-    }
-  //Resets state variable on cancelation of edit
-    function cancel(e) {
-      setUserID("");
-      setCreated("");
-      setRequested("");
-      setExpired("");
-      setToken("");
-      setEdit(-1);
-    }
+
     /**
      * This function creates the data packet for antd's table. Because
      * the table is having issues we have to set deleted rows to null.
      */
     function createDataSource(){
       return _.map(rawData,(object,index)=>{
-        let skip=false
-        // if the index is in the deleted state array then null is returned
-        _.map(deleted,(value)=>{
-          if(value===index){
-            skip=true
-          } 
-        })
-        // Otherwise data is used to populate the component.
-        if(!skip){
         return {
           key : index,
           id: object.id,
-          userID: <Input 
-                      onChange={(newValue)=>{setUserID(newValue.currentTarget.value);}} 
-                      disabled={index !== edit} 
-                      defaultValue={object.userID}
-                    />,
-          created: <Input 
-                      onChange={(newValue)=>{setCreated(newValue.currentTarget.value); }} 
-                      disabled={index !==edit} 
-                      defaultValue={object.created}
-                    />,
-          requested: <Input 
-                    onChange={(newValue)=>{setRequested(newValue.currentTarget.value);}} 
-                    disabled={index !==edit} 
-                    defaultValue={object.requested}
-                  />,
-          token: <Input 
-                    onChange={(newValue)=>{setToken(newValue.currentTarget.value);}} 
-                    disabled={index !==edit} 
-                    defaultValue={object.token}
-                  />,
-          expired: <Input 
-                    onChange={(newValue)=>{setExpired(newValue.currentTarget.value);}} 
-                    disabled={index !==edit} 
-                    defaultValue={object.expired}
-                  />,
+          userID:
+                     object.userID,
+                    
+          created:
+                     object.created,
+                    
+          requested:  
+                   object.requested,
+                  
+          token: 
+                   object.token,
+                  
+          expired:
+                   object.expired,
+                  
           edit: 
           <div>
             <Button 
@@ -131,60 +63,23 @@ function Session() {
               Users
             </Button>
             <Button 
-              onClick={()=>{history.push(`/Roles/:${index}`)}}
+              onClick={()=>{history.push(`/Roles/${urlUserID}`)}}
             >
               Roles
             </Button>
             <Button 
-              onClick={()=>{history.push(`/Actions/:${index}`)}}
+              onClick={()=>{history.push(`/Actions/${urlUserID}`)}}
             >
               Available Actions
             </Button>
             <Button 
-              onClick={()=>{history.push(`/Credentials/:${index}`)}}
+              onClick={()=>{history.push(`/Credentials/${urlUserID}`)}}
             >
               Credentials
             </Button>
            
-              <Popconfirm 
-                okText="Save To Database"
-                cancelText="Don't Save To Database"
-                visible={index===edit} 
-                onConfirm={()=>confirm(index)} 
-                onCancel={()=>cancel(index)}
-                title="Proceed with Caution"
-              > 
-                <Button 
-                  disabled={index === edit || edit !== -1}
-                  onClick={()=>{
-                    setEdit(index)
-                  }}
-                >
-                  Edit
-                </Button>
-              </Popconfirm>
-              <Popconfirm 
-                okText="Confirm"
-                cancelText="No"
-                visible={index===deleteEdit} 
-                onConfirm={()=>deleteConfirm(index)} 
-                onCancel={()=>deleteCancel(index)}
-                title="Proceed with Caution"
-              > 
-                <Button 
-                  disabled={index === deleteEdit || deleteEdit !== -1}
-                  onClick={()=>{
-                    setDeleteEdit(index)
-                  }}
-                >
-                  Delete
-                </Button>
-              </Popconfirm>
-            
             </div>
         }
-      }
-      return null
       });
     }
     /** 
@@ -194,21 +89,47 @@ function Session() {
      * the best programming practice, but oh well.
      */
     function addSessionToTable (){ 
+      console.log(userID)
+      if(
+        userID === null 
+        || token === null 
+        || userID.length === 0
+        || created.length === 0 
+        || requested.length === 0 
+        || expired.length === 0 
+        || token.length === 0
+        ){
+        message.error("Some fields were not filled out");
+        return;
+    }
       let tempRawData = rawData
-      tempRawData.push({id: "", userID: "",token:"", expired:"",requested:"",created: ""});
+      tempRawData.push({id: "", userID:userID,token:token, expired:expired,requested:requested,created: created});
+      setUserID("");
+      setToken("");
       setRawData(tempRawData);
       setRender(!render);
     }
     let dataToBeUsed= []
     dataToBeUsed=createDataSource()
-    _.forEach(deleted,(index,iterator)=>{
-      if(index===iterator){
-        dataToBeUsed[index]= null;
-      } 
-    })
   return (
       <div style={{ width: "100%", height: "100%" }}>
+        <Card style={{margin:"auto", width:"100%"}} 
+        title={
         <Title style={{margin:"auto", width:"fit-content"}}>Sessions</Title>
+        } 
+        >
+          <p>
+            The below sessions belong to the user id {`${urlUserID}`}
+          </p>
+          <p>
+            Users can make new sessions for any user with a user id, token, created date,
+            requested date, and expiration date.
+          </p>
+          <p>
+          Users can navigate to the user id: {`${urlUserID}`} credentials,  user id: {`${urlUserID}`} roles, and  user id: {`${urlUserID}`} actions.
+            Alternatively the user can navigate back to the main user table.
+          </p>
+       </Card>
         <Table style={{width:"auto"}} dataSource={dataToBeUsed}>
             <Column title="ID" dataIndex="id" key="id" />
             <Column title="User ID" dataIndex="userID" key="userID" />
@@ -218,9 +139,55 @@ function Session() {
             <Column title="Expired" dataIndex="expired" key="expired" />
             <Column title="Action" dataIndex="edit" key="edit" />
         </Table>
-        <Button onClick={addSessionToTable}>
-          Add Session
-        </Button>
+        <Card bordered style={{ width: 300 }}>
+        <div style={{marginBottom:"16px"}}>
+          <Button size="large" onClick={addSessionToTable}>
+            Add Session
+          </Button>
+        </div>
+        <Button style={{ width: "35%" }} disabled>
+          User ID
+          </Button>
+          <InputNumber 
+          placeholder ="User"
+          min={1}
+          value={userID}
+           onChange={(value)=>{setUserID(value);}} 
+        /> 
+        <Button style={{ width: "35%" }} disabled>
+          Token
+          </Button>
+        <Input 
+        style={{ width: "65%" }}
+          placeholder ="Token"
+          value={token}
+           onChange={(newValue)=>{setToken(newValue.currentTarget.value);}} 
+        /> 
+        <Button style={{ width: "45%" }} disabled>
+          Created Date
+          </Button>
+        <DatePicker
+        style={{ width: "55%" }}
+        placeholder="Created Date"
+          onChange={(date,dateString)=>{setCreated(dateString); }}  
+        />
+         <Button style={{ width: "50%" }} disabled>
+          Requested Date
+          </Button>
+        <DatePicker
+        style={{ width: "50%" }}
+        placeholder="Requested Date"
+          onChange={(date,dateString)=>{setRequested(dateString); }}  
+        />
+         <Button style={{ width: "45%" }} disabled>
+          Expiration Date
+          </Button>
+        <DatePicker
+        style={{ width: "55%" }}
+        placeholder="Expiration Date"
+          onChange={(date,dateString)=>{setExpired(dateString); }}  
+        />
+        </Card>
       </div>
     );
 }

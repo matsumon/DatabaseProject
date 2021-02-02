@@ -1,11 +1,12 @@
-import { Table, Button, Typography, Input, Popconfirm } from 'antd';
+import { Table, Button, Typography, Input, Popconfirm, message, DatePicker, Card, InputNumber,Select } from 'antd';
 import {useState} from 'react';
 import {
-  useHistory
+  useHistory,
+    useParams
 } from "react-router-dom";
 import _ from "lodash";
 import 'antd/dist/antd.css';
-
+const { Option } = Select;
 function Credential() {
   const { Column } = Table;
   console.log("RENDER");
@@ -20,8 +21,7 @@ function Credential() {
   const [created,setCreated]=useState("");
   // State variable to trigger a re-render of component
   const [render,setRender]=useState(false);
-  // The delete variable tells which component is allowed to delete its contents
-  const [deleteEdit,setDeleteEdit]=useState(-1);
+  const urlUserID= useParams("userId").userId;
   /**
    * This data is held in a state variable so that it wont reset every time the component
    * is re-rendered. This data represents the current state of data in sql
@@ -36,48 +36,18 @@ function Credential() {
    * data being fed to it has a deletion. This variable holds the indexes of
    * the raw data that has been deleted.
    */
-  const [deleted,setDeleted]=useState([]);
-  /**
-   * This function resets the delete edit variable and adds the 
-   * deleted index to the deleted state variable
-   **/
-  function deleteConfirm(e){
-    setDeleteEdit(-1);
-    let copy = deleted
-    copy.push(e)
-    setDeleted(copy)
-    setRender(!render)
-  }
-  //Resets state variable on cancelation of delete
-  function deleteCancel(e){
-    setDeleteEdit(-1);
-  }
   /**
    * This function saves the updated row to the raw state variables 
    * and resets the username,created,email, and edit varibles.
    */
     function confirm(e) {
       let tempRawData = rawData;
-      tempRawData[e].userID= userID;
-      tempRawData[e].created= created;
-      tempRawData[e].expired= expired;
-      tempRawData[e].requested= enabled;
-      tempRawData[e].token= hash;
+      tempRawData[e].userID= "null";
       setRawData(tempRawData);
-      setUserID("");
-      setCreated("");
-      setEnabled("");
-      setExpired("");
-      setHash("");
       setEdit(-1);
     }
   //Resets state variable on cancelation of edit
     function cancel(e) {
-      setUserID("");
-      setCreated("");
-      setEnabled("");
-      setExpired("");
-      setHash("");
       setEdit(-1);
     }
     /**
@@ -86,15 +56,6 @@ function Credential() {
      */
     function createDataSource(){
       return _.map(rawData,(object,index)=>{
-        let skip=false
-        // if the index is in the deleted state array then null is returned
-        _.map(deleted,(value)=>{
-          if(value===index){
-            skip=true
-          } 
-        })
-        // Otherwise data is used to populate the component.
-        if(!skip){
         return {
           key : index,
           id: object.id,
@@ -103,26 +64,10 @@ function Credential() {
                       disabled={index !== edit} 
                       defaultValue={object.userID}
                     />,
-          created: <Input 
-                      onChange={(newValue)=>{setCreated(newValue.currentTarget.value); }} 
-                      disabled={index !==edit} 
-                      defaultValue={object.created}
-                    />,
-          enabled: <Input 
-                    onChange={(newValue)=>{setEnabled(newValue.currentTarget.value);}} 
-                    disabled={index !==edit} 
-                    defaultValue={object.enabled}
-                  />,
-          hash: <Input 
-                    onChange={(newValue)=>{setHash(newValue.currentTarget.value);}} 
-                    disabled={index !==edit} 
-                    defaultValue={object.hash}
-                  />,
-          expired: <Input 
-                    onChange={(newValue)=>{setExpired(newValue.currentTarget.value);}} 
-                    disabled={index !==edit} 
-                    defaultValue={object.expired}
-                  />,
+          created: object.created,
+          enabled: object.enabled,
+          hash: object.hash,
+          expired: object.expired,
           edit: 
           <div>
             <Button 
@@ -131,17 +76,17 @@ function Credential() {
               Users
             </Button>
             <Button 
-              onClick={()=>{history.push(`/Roles/:${index}`)}}
+              onClick={()=>{history.push(`/Roles/${urlUserID}`)}}
             >
               Roles
             </Button>
             <Button 
-              onClick={()=>{history.push(`/Actions/:${index}`)}}
+              onClick={()=>{history.push(`/Actions/${urlUserID}`)}}
             >
               Available Actions
             </Button>
             <Button 
-              onClick={()=>{history.push(`/Sessions/:${index}`)}}
+              onClick={()=>{history.push(`/Sessions/${urlUserID}`)}}
             >
               Sessions
             </Button>
@@ -155,36 +100,17 @@ function Credential() {
                 title="Proceed with Caution"
               > 
                 <Button 
+                type="primary"
                   disabled={index === edit || edit !== -1}
                   onClick={()=>{
                     setEdit(index)
                   }}
                 >
-                  Edit
+                  Set User ID
                 </Button>
               </Popconfirm>
-              <Popconfirm 
-                okText="Confirm"
-                cancelText="No"
-                visible={index===deleteEdit} 
-                onConfirm={()=>deleteConfirm(index)} 
-                onCancel={()=>deleteCancel(index)}
-                title="Proceed with Caution"
-              > 
-                <Button 
-                  disabled={index === deleteEdit || deleteEdit !== -1}
-                  onClick={()=>{
-                    setDeleteEdit(index)
-                  }}
-                >
-                  Delete
-                </Button>
-              </Popconfirm>
-            
             </div>
         }
-      }
-      return null
       });
     }
     /** 
@@ -194,21 +120,42 @@ function Credential() {
      * the best programming practice, but oh well.
      */
     function addCredentialToTable (){ 
+      if(enabled.length === 0 || created.length === 0 || expired.length === 0){
+        message.error("Enable Credential, Created Date or Expiration Date were not filled out");
+        return;
+    }
       let tempRawData = rawData
-      tempRawData.push({id: "", userID: "",hash:"", expired:"",enabled:"",created: ""});
+      tempRawData.push({id: "", userID: userID,hash:hash, expired:expired,enabled:enabled,created: created});
+      setUserID("")
+      setHash("")
       setRawData(tempRawData);
       setRender(!render);
     }
     let dataToBeUsed= []
     dataToBeUsed=createDataSource()
-    _.forEach(deleted,(index,iterator)=>{
-      if(index===iterator){
-        dataToBeUsed[index]= null;
-      } 
-    })
   return (
       <div style={{ width: "100%", height: "100%" }}>
+        <Card style={{margin:"auto", width:"100%"}} 
+        title={
         <Title style={{margin:"auto", width:"fit-content"}}>Credentials</Title>
+        } 
+        >
+          <p>
+            The below Credentials belong to the user id {`${urlUserID}`}
+          </p>
+          <p>
+            Users can make new credentials for any user with a user id, hash, created date,
+            expiration date, and whether to enable credential. User ID and the hash are both optional with
+            user id being nullable
+          </p>
+          <p>
+          Users can navigate to the user id: {`${urlUserID}`} sessions,  user id: {`${urlUserID}`} roles, and  user id: {`${urlUserID}`} actions.
+            Alternatively the user can navigate back to the main user table.
+          </p>
+          <p>
+            Users can edit the user id, a foreign key to be anything including null
+          </p>
+       </Card>
         <Table style={{width:"auto"}} dataSource={dataToBeUsed}>
             <Column title="ID" dataIndex="id" key="id" />
             <Column title="User ID" dataIndex="userID" key="userID" />
@@ -218,9 +165,55 @@ function Credential() {
             <Column title="Expiration Date" dataIndex="expired" key="expired" />
             <Column title="Action" dataIndex="edit" key="edit" />
         </Table>
-        <Button onClick={addCredentialToTable}>
+        <Card bordered style={{ width: 300 }}>
+        <div style={{marginBottom:"16px"}}>
+        <Button size="large" onClick={addCredentialToTable}>
           Add Credential
         </Button>
+        </div>
+        <Button style={{ width: "35%" }} disabled>
+          User ID
+          </Button>
+          <InputNumber 
+          placeholder ="User"
+          min={1}
+          value={userID}
+           onChange={(value)=>{setUserID(value);}} 
+        />
+        <Button style={{ width: "35%" }} disabled>
+          Hash
+          </Button>
+        <Input 
+        style={{ width: "65%" }}
+          placeholder ="Hash"
+          value={hash}
+           onChange={(newValue)=>{setHash(newValue.currentTarget.value);}} 
+        /> 
+        <Button style={{ width: "45%" }} disabled>
+          Created Date
+          </Button>
+        <DatePicker
+        style={{ width: "55%" }}
+        placeholder="Created Date"
+          onChange={(date,dateString)=>{setCreated(dateString); }}  
+        />
+         <Button style={{ width: "50%" }} disabled>
+          Enable Credential
+          </Button>
+          <Select placeholder="Enable Credential" style={{ width: "50%" }} onChange={(value)=>setEnabled(value)}>
+      <Option value="true">True</Option>
+      <Option value="false">False</Option>
+      </Select>
+         <Button style={{ width: "50%" }} disabled>
+          Expiration Date
+          </Button>
+        <DatePicker
+        style={{ width: "50%" }}
+        placeholder="Expiration Date"
+          onChange={(date,dateString)=>{setExpired(dateString); }}  
+        />
+
+        </Card>
       </div>
     );
 }
