@@ -1,4 +1,4 @@
-import { Table, Button, Typography, Input, message, Card } from 'antd';
+import { Table, Button, Typography, Input, message, Card, InputNumber } from 'antd';
 import {useState} from 'react';
 import {
   useHistory,
@@ -13,6 +13,7 @@ function Role() {
   const { Title } = Typography;
   const history = useHistory();
   const [roleTitle,setRoleTitle]=useState("");
+  const [roleUserID,setRoleUserID]=useState("");
   // State variable to trigger a re-render of component
   const [render,setRender]=useState(false);
 const urlUserID= useParams("userId").userId;
@@ -39,7 +40,7 @@ const urlUserID= useParams("userId").userId;
           edit: 
           <div>
             <Button 
-              onClick={()=>{history.push(`/Sessions/${urlUserID}`)}}
+              onClick={()=>{history.push(`/Sessions/${object.newUser? object.newUser :urlUserID}`)}}
             >
               Sessions
             </Button>
@@ -49,12 +50,12 @@ const urlUserID= useParams("userId").userId;
               Users
             </Button>
             <Button 
-              onClick={()=>{history.push(`/Actions/${urlUserID}/${object.id}`)}}
+              onClick={()=>{history.push(`/Actions/${object.newUser? object.newUser :urlUserID}/${object.id}`)}}
             >
               Available Actions
             </Button>
             <Button 
-              onClick={()=>{history.push(`/Credentials/${urlUserID}`)}}
+              onClick={()=>{history.push(`/Credentials/${object.newUser? object.newUser :urlUserID}`)}}
             >
               Credentials
             </Button>
@@ -74,8 +75,9 @@ const urlUserID= useParams("userId").userId;
         return;
     }
       let tempRawData = rawData
-      tempRawData.push({id: "",roleTitle:roleTitle});
+      tempRawData.push({id: "",roleTitle:roleTitle, newUser:roleUserID});
       setRoleTitle("")
+      setRoleUserID("")
       setRawData(tempRawData);
       setRender(!render);
     }
@@ -93,6 +95,8 @@ const urlUserID= useParams("userId").userId;
           </p>
           <p>
             Users can make new roles for any user with a new role name.
+            If a User ID is added a relationship between that user id and that new role will be created. The buttons on 
+            that row will take the user to the new User specified.
           </p>
           <p>
           Users can navigate to the user id: {`${urlUserID}`} sessions, and  user id: {`${urlUserID}`} credentials
@@ -121,6 +125,16 @@ const urlUserID= useParams("userId").userId;
           placeholder ="add role"
           value={roleTitle}
            onChange={(newValue)=>{setRoleTitle(newValue.currentTarget.value);}} 
+        />    
+        <Button style={{ width: "65%" }} disabled>
+          User ID to connect role
+          </Button> 
+        <InputNumber 
+        min={1}
+        style={{ width: "35%" }}
+          placeholder ="User ID"
+          value={roleUserID}
+           onChange={(newValue)=>{setRoleUserID(newValue);}} 
         />    
         </Card>
       </div>
