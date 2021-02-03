@@ -9,12 +9,14 @@ import 'antd/dist/antd.css';
 const { Option } = Select;
 function Credential() {
   const { Column } = Table;
+  const {Option}=Select;
   console.log("RENDER");
   const { Title } = Typography;
   const history = useHistory();
   // The edit variable tells which component is allowed to edit its contents
   const [edit,setEdit]=useState(-1);
   const [userID,setUserID]=useState("");
+  const [userIDAdd,setUserIDAdd]=useState("");
   const [hash,setHash]=useState("");
   const [expired,setExpired]=useState("");
   const [enabled,setEnabled]=useState("");
@@ -31,11 +33,17 @@ function Credential() {
     {id: 2, userID: 2,hash:"asdfdas312dsf", expired:"3/4/21", enabled:"false",created: "9/2/12"},
     {id: 3, userID: 6,hash:"asdfsdaf32", expired:"1/29/21", enabled:"true",created: "21/2/12"}
   ]);
-  /**
-   * This state has to exist because antd's table is having issues when the
-   * data being fed to it has a deletion. This variable holds the indexes of
-   * the raw data that has been deleted.
-   */
+  const userOptions=_.map([1,2,3,4,5,6,7,8,9,10],(element,index)=>{return <Option key={index} value={element} label={element}/>})
+userOptions.push(<Option key="key" value={""} label="Null"/>)
+  function handleSelectUserChange(value){
+    console.log(value)
+    setUserIDAdd(value)
+    
+  }
+  function handleSelectEditUserChange(value,id){
+    console.log(value,id)
+    setUserID(value)
+  }
   /**
    * This function saves the updated row to the raw state variables 
    * and resets the username,created,email, and edit varibles.
@@ -59,11 +67,20 @@ function Credential() {
         return {
           key : index,
           id: object.id,
-          userID: <Input 
-                      onChange={(newValue)=>{setUserID(newValue.currentTarget.value);}} 
-                      disabled={index !== edit} 
-                      defaultValue={object.userID}
-                    />,
+          userID: 
+          // <Input 
+          //             onChange={(newValue)=>{setUserID(newValue.currentTarget.value);}} 
+          //             disabled={index !== edit} 
+          //             defaultValue={object.userID}
+          //           />,
+          <Select
+          style={{ width: '65%' }}
+          placeholder="User Id"
+          // value={userID}
+          onChange={(value)=>{handleSelectEditUserChange(value,object.id)}}
+          defaultValue={object.userID.toString()}
+          optionLabelProp="label"
+        > {userOptions}</Select>,
           created: object.created,
           enabled: object.enabled,
           hash: object.hash,
@@ -99,7 +116,7 @@ function Credential() {
                 onCancel={()=>cancel(index)}
                 title="Proceed with Caution"
               > 
-                <Button 
+                {/* <Button 
                 type="primary"
                   disabled={index === edit || edit !== -1}
                   onClick={()=>{
@@ -107,7 +124,7 @@ function Credential() {
                   }}
                 >
                   Set User ID
-                </Button>
+                </Button> */}
               </Popconfirm>
             </div>
         }
@@ -174,12 +191,19 @@ function Credential() {
         <Button style={{ width: "35%" }} disabled>
           User ID
           </Button>
-          <InputNumber 
+          <Select
+          style={{ width: '65%' }}
+          placeholder="User Id"
+          value={userIDAdd}
+          onChange={(value)=>{handleSelectUserChange(value)}}
+          optionLabelProp="label"
+        > {userOptions}</Select>
+          {/* <InputNumber 
           placeholder ="User"
           min={1}
           value={userID}
            onChange={(value)=>{setUserID(value);}} 
-        />
+        /> */}
         <Button style={{ width: "35%" }} disabled>
           Hash
           </Button>

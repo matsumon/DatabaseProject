@@ -1,4 +1,4 @@
-import { Table, Button, Typography, Input, message, Card, InputNumber } from 'antd';
+import { Table, Button, Typography, Input, Select, message, Card, InputNumber } from 'antd';
 import {useState} from 'react';
 import {
   useHistory,
@@ -9,6 +9,7 @@ import 'antd/dist/antd.css';
 function Role() {
 
   const { Column } = Table;
+  const {Option} = Select
   console.log("RENDER");
   const { Title } = Typography;
   const history = useHistory();
@@ -27,7 +28,13 @@ const urlUserID= useParams("userId").userId;
     {id: 2, roleTitle:"Capitain"},
     {id: 3, roleTitle:"Officer"}
   ]);
-    /**
+  const userOptions=_.map([1,2,3,4,5,6,7,8,9,10],(element,index)=>{return <Option key={index} value={element} label={element}/>})
+  function handleSelectUserChange(value){
+    console.log(value)
+    setRoleUserID(value)
+    
+  }
+  /**
      * This function creates the data packet for antd's table. Because
      * the table is having issues we have to set deleted rows to null.
      */
@@ -126,16 +133,24 @@ const urlUserID= useParams("userId").userId;
           value={roleTitle}
            onChange={(newValue)=>{setRoleTitle(newValue.currentTarget.value);}} 
         />    
-        <Button style={{ width: "65%" }} disabled>
-          User ID to connect role
+        <Button style={{ width: "55%" }} disabled>
+          User ID's to Add
           </Button> 
-        <InputNumber 
+          <Select
+          style={{ width: '35%' }}
+          mode="tags"
+          placeholder="User Id"
+          value={roleUserID}
+          onChange={(value)=>{handleSelectUserChange(value)}}
+          optionLabelProp="label"
+        > {userOptions}</Select>
+        {/* <InputNumber 
         min={1}
         style={{ width: "35%" }}
           placeholder ="User ID"
           value={roleUserID}
            onChange={(newValue)=>{setRoleUserID(newValue);}} 
-        />    
+        />     */}
         </Card>
       </div>
     );

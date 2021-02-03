@@ -1,4 +1,4 @@
-import { Table, Button, Typography, Input,InputNumber, message, DatePicker, Card } from 'antd';
+import { Table, Button, Typography, Input,InputNumber,Select, message, DatePicker, Card } from 'antd';
 import {useState} from 'react';
 import {
   useHistory,
@@ -9,6 +9,7 @@ import 'antd/dist/antd.css';
 
 function Session() {
   const { Column } = Table;
+  const { Option } = Select;
   console.log("RENDER");
   const { Title } = Typography;
   const history = useHistory();
@@ -20,11 +21,15 @@ function Session() {
   // State variable to trigger a re-render of component
   const [render,setRender]=useState(false);
   const urlUserID= useParams("userId").userId;
-  console.log("urlUserID",urlUserID)
+  function handleSelectUserChange(value){
+    console.log(value)
+    setUserID(value)
+  }
   /**
    * This data is held in a state variable so that it wont reset every time the component
    * is re-rendered. This data represents the current state of data in sql
    */
+  const userOptions=_.map([1,2,3,4,5,6,7,8,9,10],(element,index)=>{return <Option key={index} value={element} label={element}/>})
   const [rawData,setRawData]= useState([
     {id: 1, userID: 3,token:"112312312dsf", expired:"1/2/21",requested:"1/1/22",created: "2/2/12"},
     {id: 2, userID: 2,token:"asdfdas312dsf", expired:"3/4/21",requested:"1/2/22",created: "9/2/12"},
@@ -148,12 +153,13 @@ function Session() {
         <Button style={{ width: "35%" }} disabled>
           User ID
           </Button>
-          <InputNumber 
-          placeholder ="User"
-          min={1}
+          <Select
+          style={{ width: '65%' }}
+          placeholder="User Id"
           value={userID}
-           onChange={(value)=>{setUserID(value);}} 
-        /> 
+          onChange={(value)=>{handleSelectUserChange(value)}}
+          optionLabelProp="label"
+        > {userOptions}</Select>
         <Button style={{ width: "35%" }} disabled>
           Token
           </Button>

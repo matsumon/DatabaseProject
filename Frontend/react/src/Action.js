@@ -18,7 +18,7 @@ function Action() {
   const [action,setAction]=useState("");
   const [roleID,setRoleID]=useState("");
   const [actionSearch,setActionSearch]=useState("");
-  const [idSearch,setIdSearch]=useState("");
+  const [idSearch,setIdSearch]=useState([]);
   const [results,setResults]=useState(false);
   // State variable to trigger a re-render of component
   const [render,setRender]=useState(false);
@@ -32,10 +32,11 @@ function Action() {
    */
   const [searchResultsComponent,setSearchResultsComponent]= useState([])
   const [rawData,setRawData]= useState([
-    {id: 3, action:"Fly",mmRoleID:"12312,123,2"},
-    {id: 5, action:"Open",mmRoleID:"123213,12312,123"},
-    {id: 4, action:"Create",mmRoleID:"11,12312"}
+    {id: 3, action:"Fly",mmRoleID:"1,2,3"},
+    {id: 5, action:"Open",mmRoleID:"4,5,6"},
+    {id: 4, action:"Create",mmRoleID:"7,8"}
   ]);
+  const actionOptions =_.map(rawData,(element)=>{return <Option value={element.id} label={element.id}/>})
   function numbersCheck(check){
     const re = /^[0-9,]+$/
     if(check){
@@ -47,6 +48,17 @@ function Action() {
   function handleSelectChange(value, id){
     console.log(value,id)
   }
+  function handleSelectRoleChange(value){
+    console.log(value)
+    setRoleID(value)
+    
+  }
+  function handleSearchActionChange(value){
+    console.log(value)
+    setIdSearch(value)
+    
+  }
+  let options = _.map([1,2,3,4,5,6,7,8,9,10],(element)=>{return <Option value={element} tag = {element}/>})
   /**
    * This state has to exist because antd's table is having issues when the
    * data being fed to it has a deletion. This variable holds the indexes of
@@ -79,16 +91,16 @@ function Action() {
       }
       console.log("ACTION",action)
       let tempRawData = rawData;
-      tempRawData[e].username= action;
+      tempRawData[e].action= action;
       setRawData(tempRawData);
       setAction("");
-      setRoleID("")
+      // setRoleID("")
       setEdit(-1);
     }
   //Resets state variable on cancelation of edit
     function cancel(e) {
       setAction("");
-      setRoleID("")
+      // setRoleID("")
       setEdit(-1);
     }
     /**
@@ -106,11 +118,11 @@ function Action() {
         })
         // Otherwise data is used to populate the component.
         if(!skip){
-          let options= null;
+          // let options= null;
           let defaultOptions=null;
           if(object.mmRoleID){
-           options = _.map(object.mmRoleID.split(","),(element)=>{return <Option value={element} tag = {element}/>})
-           defaultOptions = _.map(object.mmRoleID.split(","),(element)=>{return element})
+          //  options = _.map(object.mmRoleID.split(","),(element)=>{return <Option value={element} tag = {element}/>})
+           defaultOptions = _.map(object.mmRoleID,(element)=>{return element})
           }
         return {
           key : index,
@@ -187,10 +199,10 @@ function Action() {
                   onClick={()=>{
                     setEdit(index)
                     setAction(rawData[index].action)
-                    setRoleID(rawData[index].mmRoleID)
+                    // setRoleID(rawData[index].mmRoleID)
                   }}
                 >
-                  Edit
+                  Edit Action
                 </Button>
               </Popconfirm>
               <Popconfirm 
@@ -292,14 +304,21 @@ function Action() {
         />    
          <Button style={{ width: "65%" }} disabled>
           Role IDs to add action
-          </Button> 
-        <InputNumber
+          </Button>
+          <Select
+          mode="multiple"
+          style={{ width: '35%' }}
+          placeholder="Role Id's To Add"
+          onChange={(value)=>{handleSelectRoleChange(value)}}
+          optionLabelProp="label"
+        > {options}</Select>
+        {/* <InputNumber
         style={{ width: "35%" }}
           placeholder ="Role ID"
           parser={value=>numbersCheck(value)}
           value={roleID}
            onChange={(newValue)=>{setRoleID(newValue);}} 
-        /> 
+        />  */}
         </Card>
         <Card bordered style={{ width: 300 }}>
         <div style={{marginBottom:"16px"}}>
@@ -329,12 +348,20 @@ function Action() {
         <Button style={{ width: "35%" }} disabled>
           Action ID
           </Button>
-          <InputNumber 
+          <Select
+          mode="multiple"
+          value={idSearch}
+          style={{ width: '65%' }}
+          placeholder="Role Id's To Add"
+          onChange={(value)=>{handleSearchActionChange(value)}}
+          optionLabelProp="label"
+        > {options}</Select>
+          {/* <InputNumber 
           placeholder ="Filter By Action ID"
           min={1}
           value={idSearch}
            onChange={(value)=>{setIdSearch(value);}} 
-        /> 
+        />  */}
         <Modal title="Filter Results" 
           visible={results} 
           closable={false} 
