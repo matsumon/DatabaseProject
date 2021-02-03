@@ -47,7 +47,7 @@ const urlUserID= useParams("userId").userId;
           edit: 
           <div>
             <Button 
-              onClick={()=>{history.push(`/Sessions/${object.newUser? object.newUser :urlUserID}`)}}
+              onClick={()=>{history.push(`/Sessions/${urlUserID}`)}}
             >
               Sessions
             </Button>
@@ -57,12 +57,12 @@ const urlUserID= useParams("userId").userId;
               Users
             </Button>
             <Button 
-              onClick={()=>{history.push(`/Actions/${object.newUser? object.newUser :urlUserID}`)}}
+              onClick={()=>{history.push(`/Actions/${urlUserID}`)}}
             >
               Available Actions
             </Button>
             <Button 
-              onClick={()=>{history.push(`/Credentials/${object.newUser? object.newUser :urlUserID}`)}}
+              onClick={()=>{history.push(`/Credentials/${urlUserID}`)}}
             >
               Credentials
             </Button>
