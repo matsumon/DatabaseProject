@@ -1,4 +1,4 @@
-import { Table, Button, Typography, Input, Popconfirm, message, Card, Modal, InputNumber  } from 'antd';
+import { Table, Button, Typography, Input, Popconfirm, message,Select, Card, Modal, InputNumber  } from 'antd';
 import {useState} from 'react';
 import {
   useHistory,
@@ -8,6 +8,7 @@ import _ from "lodash";
 import 'antd/dist/antd.css';
 
 function Action() {
+  const { Option } = Select;
   const { Column } = Table;
   console.log("RENDER");
   const { Title } = Typography;
@@ -42,6 +43,9 @@ function Action() {
       return check.match(re)
     } 
     return;
+  }
+  function handleSelectChange(value, id){
+    console.log(value,id)
   }
   /**
    * This state has to exist because antd's table is having issues when the
@@ -102,6 +106,12 @@ function Action() {
         })
         // Otherwise data is used to populate the component.
         if(!skip){
+          let options= null;
+          let defaultOptions=null;
+          if(object.mmRoleID){
+           options = _.map(object.mmRoleID.split(","),(element)=>{return <Option value={element} tag = {element}/>})
+           defaultOptions = _.map(object.mmRoleID.split(","),(element)=>{return element})
+          }
         return {
           key : index,
           id: object.id,
@@ -110,18 +120,36 @@ function Action() {
                       disabled={index !== edit} 
                       defaultValue={object.action}
                     />,
-          mmRoleID: <Input 
-                      onChange={(newValue)=>{
-                        if(newValue.currentTarget.value[newValue.currentTarget.value.length -1]== 0){
-                          newValue.currentTarget.value[newValue.currentTarget.value.length -1]= 1
-                          return;
-                        }
-                        setRoleID(numbersCheck(newValue.currentTarget.value))
-                        return roleID
-                      }} 
-                      disabled={index !== edit} 
-                      defaultValue={numbersCheck(object.mmRoleID)}
-                    />,
+          mmRoleID: 
+          <Select
+          mode="multiple"
+          style={{ width: '100%' }}
+          placeholder="select Role Id's"
+          defaultValue={defaultOptions?defaultOptions:undefined}
+          onChange={(value)=>{handleSelectChange(value, object.id)}}
+          optionLabelProp="label"
+        > {options}</Select>,
+          
+          
+          
+          // <div>{options}</div>,
+          // <Input 
+          //             onChange={(newValue)=>{
+          //               if(newValue.currentTarget.value[newValue.currentTarget.value.length -1]== 0){
+          //                 newValue.currentTarget.value[newValue.currentTarget.value.length -1]= 1
+          //                 return;
+          //               }
+          //               setRoleID(numbersCheck(newValue.currentTarget.value))
+          //               return roleID
+          //             }} 
+          //             disabled={index !== edit} 
+          //             defaultValue={numbersCheck(object.mmRoleID)}
+          //           />,
+  //         <Menu onClick={}>
+  //   <Menu.Item key="1">1st menu item</Menu.Item>
+  //   <Menu.Item key="2">2nd menu item</Menu.Item>
+  //   <Menu.Item key="3">3rd menu item</Menu.Item>
+  // </Menu>,
           edit: 
           <div>
             <Button 
