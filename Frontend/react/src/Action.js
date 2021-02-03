@@ -270,8 +270,6 @@ function Action() {
             Users can create, read, update, and delete actions. Users can add actions to roles by specifying role id's.
             Adding M:M relationships between actions and different users other than the main user shown in the url 
             will populate the table but will not automatically belong to the current user or current role.
-            Role Id's should be a comma seperated list, empty list, or single item
-            Ex) "1,2,3,4" or "" or "1"
           </p>
           <p>
             Users can navigate to the user id: {`${urlUserID}`} sessions,  user id: {`${urlUserID}`} roles, and  user id: {`${urlUserID}`} credentials.
