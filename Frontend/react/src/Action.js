@@ -32,9 +32,9 @@ function Action() {
    */
   const [searchResultsComponent,setSearchResultsComponent]= useState([])
   const [rawData,setRawData]= useState([
-    {id: 3, action:"Fly",mmRoleID:"1,2,3"},
-    {id: 5, action:"Open",mmRoleID:"4,5,6"},
-    {id: 4, action:"Create",mmRoleID:"7,8"}
+    {id: 3, action:"Fly",mmRoleID:[1,2,3]},
+    {id: 5, action:"Open",mmRoleID:[4,5,6]},
+    {id: 4, action:"Create",mmRoleID:[7,8]}
   ]);
   const actionOptions =_.map(rawData,(element)=>{return <Option value={element.id} label={element.id}/>})
   function numbersCheck(check){
