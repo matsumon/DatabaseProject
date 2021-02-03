@@ -57,7 +57,7 @@ const urlUserID= useParams("userId").userId;
               Users
             </Button>
             <Button 
-              onClick={()=>{history.push(`/Actions/${object.newUser? object.newUser :urlUserID}/${object.id}`)}}
+              onClick={()=>{history.push(`/Actions/${object.newUser? object.newUser :urlUserID}`)}}
             >
               Available Actions
             </Button>
@@ -106,10 +106,8 @@ const urlUserID= useParams("userId").userId;
             that row will take the user to the new User specified.
           </p>
           <p>
-          Users can navigate to the user id: {`${urlUserID}`} sessions, and  user id: {`${urlUserID}`} credentials
-          <p>It is important to note that transfering to the actions page from here will list all of the possible actions
-          for this role rather than showing a users possible actions.
-          </p>
+          Users can navigate to the user id: {`${urlUserID}`} sessions, user id: {`${urlUserID}`} actions, 
+          and  user id: {`${urlUserID}`} credentials
             Alternatively the user can navigate back to the main user table.
           </p>
        </Card>
@@ -138,9 +136,8 @@ const urlUserID= useParams("userId").userId;
           </Button> 
           <Select
           style={{ width: '35%' }}
-          mode="tags"
           placeholder="User Id"
-          value={roleUserID}
+          // value={roleUserID}
           onChange={(value)=>{handleSelectUserChange(value)}}
           optionLabelProp="label"
         > {userOptions}</Select>

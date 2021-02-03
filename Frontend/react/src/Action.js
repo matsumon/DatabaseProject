@@ -25,7 +25,6 @@ function Action() {
   // The delete variable tells which component is allowed to delete its contents
   const [deleteEdit,setDeleteEdit]=useState(-1);
   const urlUserID= useParams("userId").userId;
-  const urlRoleID= useParams("actionId").actionId;
   /**
    * This data is held in a state variable so that it wont reset every time the component
    * is re-rendered. This data represents the current state of data in sql
@@ -263,8 +262,7 @@ function Action() {
         } 
         >
           <p>
-            {urlRoleID ?`The below actions belong to the role id: ${urlRoleID}`
-            : `The below actions belong to the user id: ${urlUserID}`}
+            {`The below actions belong to the user id: ${urlUserID}`}
           </p>
           <p>
             Users can create, read, update, and delete actions. Users can add actions to roles by specifying role id's.
