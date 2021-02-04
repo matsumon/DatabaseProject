@@ -8,3 +8,5 @@
 
 # remove log files
 /App_Log/**
+
+**/.eslintcache
