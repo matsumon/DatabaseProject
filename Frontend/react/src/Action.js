@@ -1,12 +1,14 @@
-import { Table, Button, Typography, Input, Popconfirm } from 'antd';
+import { Table, Button, Typography, Input, Popconfirm, message,Select, Card, Modal, InputNumber  } from 'antd';
 import {useState} from 'react';
 import {
-  useHistory
+  useHistory,
+  useParams
 } from "react-router-dom";
 import _ from "lodash";
 import 'antd/dist/antd.css';
 
 function Action() {
+  const { Option } = Select;
   const { Column } = Table;
   console.log("RENDER");
   const { Title } = Typography;
@@ -14,19 +16,48 @@ function Action() {
   // The edit variable tells which component is allowed to edit its contents
   const [edit,setEdit]=useState(-1);
   const [action,setAction]=useState("");
+  const [roleID,setRoleID]=useState("");
+  const [actionSearch,setActionSearch]=useState("");
+  const [idSearch,setIdSearch]=useState([]);
+  const [results,setResults]=useState(false);
   // State variable to trigger a re-render of component
   const [render,setRender]=useState(false);
   // The delete variable tells which component is allowed to delete its contents
   const [deleteEdit,setDeleteEdit]=useState(-1);
+  const urlUserID= useParams("userId").userId;
   /**
    * This data is held in a state variable so that it wont reset every time the component
    * is re-rendered. This data represents the current state of data in sql
    */
+  const [searchResultsComponent,setSearchResultsComponent]= useState([])
   const [rawData,setRawData]= useState([
-    {id: 1, action:"Fly"},
-    {id: 2, action:"Open"},
-    {id: 3, action:"Create"}
+    {id: 3, action:"Fly",mmRoleID:[1,2,3]},
+    {id: 5, action:"Open",mmRoleID:[4,5,6]},
+    {id: 4, action:"Create",mmRoleID:[7,8]}
   ]);
+  const actionOptions =_.map(rawData,(element)=>{return <Option value={element.id} label={element.id}/>})
+  function numbersCheck(check){
+    const re = /^[0-9,]+$/
+    if(check){
+      console.log(check)
+      return check.match(re)
+    } 
+    return;
+  }
+  function handleSelectChange(value, id){
+    console.log(value,id)
+  }
+  function handleSelectRoleChange(value){
+    console.log(value)
+    setRoleID(value)
+    
+  }
+  function handleSearchActionChange(value){
+    console.log(value)
+    setIdSearch(value)
+    
+  }
+  let options = _.map([1,2,3,4,5,6,7,8,9,10],(element)=>{return <Option value={element} tag = {element}/>})
   /**
    * This state has to exist because antd's table is having issues when the
    * data being fed to it has a deletion. This variable holds the indexes of
@@ -53,15 +84,22 @@ function Action() {
    * and resets the username,created,email, and edit varibles.
    */
     function confirm(e) {
+      if(action === null || action.length === 0){
+        message.error("Action cannot be empty ");
+        return;
+      }
+      console.log("ACTION",action)
       let tempRawData = rawData;
-      tempRawData[e].username= action;
+      tempRawData[e].action= action;
       setRawData(tempRawData);
       setAction("");
+      // setRoleID("")
       setEdit(-1);
     }
   //Resets state variable on cancelation of edit
     function cancel(e) {
       setAction("");
+      // setRoleID("")
       setEdit(-1);
     }
     /**
@@ -79,6 +117,12 @@ function Action() {
         })
         // Otherwise data is used to populate the component.
         if(!skip){
+          // let options= null;
+          let defaultOptions=null;
+          if(object.mmRoleID){
+          //  options = _.map(object.mmRoleID.split(","),(element)=>{return <Option value={element} tag = {element}/>})
+           defaultOptions = _.map(object.mmRoleID,(element)=>{return element})
+          }
         return {
           key : index,
           id: object.id,
@@ -87,10 +131,40 @@ function Action() {
                       disabled={index !== edit} 
                       defaultValue={object.action}
                     />,
+          mmRoleID: 
+          <Select
+          mode="multiple"
+          style={{ width: '100%' }}
+          placeholder="select Role Id's"
+          defaultValue={defaultOptions?defaultOptions:undefined}
+          onChange={(value)=>{handleSelectChange(value, object.id)}}
+          optionLabelProp="label"
+        > {options}</Select>,
+          
+          
+          
+          // <div>{options}</div>,
+          // <Input 
+          //             onChange={(newValue)=>{
+          //               if(newValue.currentTarget.value[newValue.currentTarget.value.length -1]== 0){
+          //                 newValue.currentTarget.value[newValue.currentTarget.value.length -1]= 1
+          //                 return;
+          //               }
+          //               setRoleID(numbersCheck(newValue.currentTarget.value))
+          //               return roleID
+          //             }} 
+          //             disabled={index !== edit} 
+          //             defaultValue={numbersCheck(object.mmRoleID)}
+          //           />,
+  //         <Menu onClick={}>
+  //   <Menu.Item key="1">1st menu item</Menu.Item>
+  //   <Menu.Item key="2">2nd menu item</Menu.Item>
+  //   <Menu.Item key="3">3rd menu item</Menu.Item>
+  // </Menu>,
           edit: 
           <div>
             <Button 
-              onClick={()=>{history.push(`/Sessions/:${index}`)}}
+              onClick={()=>{history.push(`/Sessions/${urlUserID}`)}}
             >
               Sessions
             </Button>
@@ -100,12 +174,12 @@ function Action() {
               Users
             </Button>
             <Button 
-              onClick={()=>{history.push(`/Roles/:${index}`)}}
+              onClick={()=>{history.push(`/Roles/${urlUserID}`)}}
             >
               Roles
             </Button>
             <Button 
-              onClick={()=>{history.push(`/Credentials/:${index}`)}}
+              onClick={()=>{history.push(`/Credentials/${urlUserID}`)}}
             >
               Credentials
             </Button>
@@ -120,11 +194,14 @@ function Action() {
               > 
                 <Button 
                   disabled={index === edit || edit !== -1}
+                  type="primary"
                   onClick={()=>{
                     setEdit(index)
+                    setAction(rawData[index].action)
+                    // setRoleID(rawData[index].mmRoleID)
                   }}
                 >
-                  Edit
+                  Edit Action
                 </Button>
               </Popconfirm>
               <Popconfirm 
@@ -137,6 +214,7 @@ function Action() {
               > 
                 <Button 
                   disabled={index === deleteEdit || deleteEdit !== -1}
+                  danger
                   onClick={()=>{
                     setDeleteEdit(index)
                   }}
@@ -158,9 +236,15 @@ function Action() {
      * the best programming practice, but oh well.
      */
     function addActionToTable (){ 
+      if(action === null || action.length === 0){
+        message.error("Action was not filled out");
+        return;
+    }   
       let tempRawData = rawData
-      tempRawData.push({id: "",action:""});
+      tempRawData.push({id: "",action:action,mmRoleID:roleID});
       setRawData(tempRawData);
+      setAction("")
+      setRoleID("")
       setRender(!render);
     }
     let dataToBeUsed= []
@@ -172,15 +256,117 @@ function Action() {
     })
   return (
       <div style={{ width: "100%", height: "100%" }}>
+        <Card style={{margin:"auto", width:"100%"}} 
+        title={
         <Title style={{margin:"auto", width:"fit-content"}}>Actions</Title>
+        } 
+        >
+          <p>
+            {`The below actions belong to the user id: ${urlUserID}`}
+          </p>
+          <p>
+            Users can create, read, update, and delete actions. Users can add actions to roles by specifying role id's.
+            Adding M:M relationships between actions and different users other than the main user shown in the url 
+            will populate the table but will not automatically belong to the current user or current role.
+          </p>
+          <p>
+            Users can navigate to the user id: {`${urlUserID}`} sessions,  user id: {`${urlUserID}`} roles, and  user id: {`${urlUserID}`} credentials.
+            Alternatively the user can navigate back to the main user table. 
+          </p>
+          <p>
+            Users can also filter through all actions in the table by using the bottom filter.
+          </p>
+       </Card>
         <Table style={{width:"auto"}} dataSource={dataToBeUsed}>
             <Column title="ID" dataIndex="id" key="id" />
             <Column title="Actions" dataIndex="action" key="action" />
+            <Column title="Role ID's" dataIndex="mmRoleID" key="mmRoleID" />
             <Column title="Action" dataIndex="edit" key="edit" />
         </Table>
-        <Button onClick={addActionToTable}>
+        <Card bordered style={{ width: 300 }}>
+        <div style={{marginBottom:"16px"}}>
+        <Button size="large" onClick={addActionToTable}>
           Add Action
         </Button>
+        </div>
+        <Button style={{ width: "35%" }} disabled>
+          Action
+          </Button> 
+        <Input 
+        style={{ width: "65%" }}
+          placeholder ="add action"
+          value={action}
+           onChange={(newValue)=>{setAction(newValue.currentTarget.value);}} 
+        />    
+         <Button style={{ width: "65%" }} disabled>
+          Role IDs to add action
+          </Button>
+          <Select
+          mode="multiple"
+          style={{ width: '35%' }}
+          placeholder="Role Id's To Add"
+          onChange={(value)=>{handleSelectRoleChange(value)}}
+          optionLabelProp="label"
+        > {options}</Select>
+        {/* <InputNumber
+        style={{ width: "35%" }}
+          placeholder ="Role ID"
+          parser={value=>numbersCheck(value)}
+          value={roleID}
+           onChange={(newValue)=>{setRoleID(newValue);}} 
+        />  */}
+        </Card>
+        <Card bordered style={{ width: 300 }}>
+        <div style={{marginBottom:"16px"}}>
+        <Button size="large" style={{ width: "200" }}onClick={()=>{
+          setResults(true)
+          const returnValue =[
+            {id: 3, action:"Fly"},
+            {id: 5, action:"Open"},
+            {id: 4, action:"Create"}
+          ]
+           setSearchResultsComponent( _.map(returnValue,(object)=>{return <p>Id: {object.id} Action: {object.action}</p>}));
+          }}>
+          Filter All Actions
+          </Button> 
+          </div>
+          <Button style={{ width: "35%" }} disabled>
+          Action
+          </Button> 
+        <Input 
+        style={{ width: "65%" }}
+          placeholder ="Filter All Actions by Action"
+          value={actionSearch}
+           onChange={(newValue)=>{
+             setActionSearch(newValue.currentTarget.value);
+          }} 
+        />
+        <Button style={{ width: "35%" }} disabled>
+          Action ID
+          </Button>
+          <Select
+          mode="multiple"
+          value={idSearch}
+          style={{ width: '65%' }}
+          placeholder="Role Id's To Add"
+          onChange={(value)=>{handleSearchActionChange(value)}}
+          optionLabelProp="label"
+        > {options}</Select>
+          {/* <InputNumber 
+          placeholder ="Filter By Action ID"
+          min={1}
+          value={idSearch}
+           onChange={(value)=>{setIdSearch(value);}} 
+        />  */}
+        <Modal title="Filter Results" 
+          visible={results} 
+          closable={false} 
+          onOk={()=>setResults(false)} 
+          onCancel={()=>setResults(false)}
+          >
+          {searchResultsComponent}
+      </Modal>
+      </Card>
       </div>
     );
 }

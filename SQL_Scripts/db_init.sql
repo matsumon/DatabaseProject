@@ -31,7 +31,7 @@ CREATE TABLE `credential` (
   `exp_date` datetime NOT NULL,
   `created_date` datetime NOT NULL,
   `enabled` boolean NOT NULL,
-  `user_id` int NOT NULL
+  `user_id` int
 );
 
 CREATE TABLE `session` (
