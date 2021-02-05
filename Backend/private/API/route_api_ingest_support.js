@@ -1,5 +1,5 @@
 const support = require('../support.js'); // bring in support functions
-const logon = require('../API/p_logon_handler') // bring in logon handler functions
+const logon = require('./p_logon_handler') // bring in logon handler functions
 const session = require('../Database/p_session') // import session management handlers
 
 async function parse_http_JsonBody(req) {
