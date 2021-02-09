@@ -131,5 +131,10 @@ async function validate_user(package) {
     });
 };
 
+async function validate_session(){
+    // code to validate user sessions
+};
+
 //export required module components
 module.exports.validate_user = validate_user;
+module.exports.validate_session = validate_session;

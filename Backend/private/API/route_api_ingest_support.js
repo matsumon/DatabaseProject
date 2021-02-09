@@ -65,7 +65,72 @@ async function evaluate_API_request(json_api_request, res) {
 
 
                 break;
+            case "ADD_USR":
+                logon.validate_session(json_api_request).then((r_msg) => { // session is valid
 
+
+    
+
+                }).catch((error) => {   // session is invalid or error occurred
+                    res.status(403);
+                    const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                    res.send(response);
+                
+                });
+                break;
+            case "ADD_SESSION":
+                logon.validate_session(json_api_request).then((r_msg) => { // session is valid
+
+
+    
+
+                }).catch((error) => {   // session is invalid or error occurred
+                    res.status(403);
+                    const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                    res.send(response);
+                
+                });
+                break;
+            case "ADD_ROLE":
+                logon.validate_session(json_api_request).then((r_msg) => { // session is valid
+
+
+    
+
+                }).catch((error) => {   // session is invalid or error occurred
+                    res.status(403);
+                    const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                    res.send(response);
+                
+                });
+                break;
+            case "ADD_CRED":
+                logon.validate_session(json_api_request).then((r_msg) => { // session is valid
+
+
+    
+
+                }).catch((error) => {   // session is invalid or error occurred
+                    res.status(403);
+                    const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                    res.send(response);
+                
+                });
+                break;  
+            case "UPDATE_CRED":
+                logon.validate_session(json_api_request).then((r_msg) => { // session is valid
+
+
+    
+
+                }).catch((error) => {   // session is invalid or error occurred
+                    res.status(403);
+                    const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                    res.send(response);
+                
+                });
+                break;
+            // Deal with BAD API requests
             default:
 
                 res.status(400);
