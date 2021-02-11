@@ -1,7 +1,7 @@
 /*
 This Script should init our databases for based on our design we created a dbdiagram.io file for
 */
-USE cs340_matsumon; /* Select our target DB to create these tables in*/
+-- USE cs340_smithb22; /* Select our target DB to create these tables in*/
 
 CREATE TABLE `user` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
