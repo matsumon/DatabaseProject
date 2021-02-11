@@ -11,10 +11,22 @@ async function parse_http_JsonBody(req) {
                 body += chunk.toString();
             });
             req.on('end', () => {
-                const json_body = JSON.parse(body);
-                resolve(json_body);
+                try{
+                    const json_body = JSON.parse(body);
+                    resolve(json_body);
+                }catch(e){
+                    // capture json parse error
+                    support.log("error", "route_api_ingest_support.js - parse_http_JsonBody : Can NOT parse HTTP JSON BODY, BODY NOT JSON");
+                    const r_msg = {
+                        "status": 0,
+                        "Message": "Can NOT parse HTTP JSON BODY, BODY NOT JSON",
+                    };
+                    reject(r_msg);
+                }
+                
             });
-        } catch {
+        } catch(e){
+            // catch all other errors
             support.log("error", "route_api_ingest_support.js - parse_http_JsonBody : Can NOT parse HTTP JSON BODY, unknown error");
 
             const r_msg = {
@@ -45,6 +57,7 @@ async function evaluate_API_request(json_api_request, res) {
                         res.status(200);
                         res.setHeader('Access-Control-Allow-Origin', '*');
                         res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
                         const response = `${JSON.stringify(r_msg)}`;
                         res.send(response);
 
@@ -53,6 +66,7 @@ async function evaluate_API_request(json_api_request, res) {
                         res.status(500);
                         res.setHeader('Access-Control-Allow-Origin', '*');
                         res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
                         const response = `HTTP 500 - CREDENTIALS VALIDATED - COULD NOT GENERATED SESSION TOKEN: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
                         res.send(response);
 
@@ -79,6 +93,7 @@ async function evaluate_API_request(json_api_request, res) {
                     res.status(403);
                     res.setHeader('Access-Control-Allow-Origin', '*');
                     res.setHeader('Access-Control-Allow-Headers', '*');
+                    res.setHeader('Access-Control-Request-Method', '*');
                     const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
                     res.send(response);
                 
@@ -94,6 +109,7 @@ async function evaluate_API_request(json_api_request, res) {
                     res.status(403);
                     res.setHeader('Access-Control-Allow-Origin', '*');
                     res.setHeader('Access-Control-Allow-Headers', '*');
+                    res.setHeader('Access-Control-Request-Method', '*');
                     const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
                     res.send(response);
                 
@@ -109,6 +125,7 @@ async function evaluate_API_request(json_api_request, res) {
                     res.status(403);
                     res.setHeader('Access-Control-Allow-Origin', '*');
                     res.setHeader('Access-Control-Allow-Headers', '*');
+                    res.setHeader('Access-Control-Request-Method', '*');
                     const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
                     res.send(response);
                 
@@ -124,6 +141,7 @@ async function evaluate_API_request(json_api_request, res) {
                     res.status(403);
                     res.setHeader('Access-Control-Allow-Origin', '*');
                     res.setHeader('Access-Control-Allow-Headers', '*');
+                    res.setHeader('Access-Control-Request-Method', '*');
                     const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
                     res.send(response);
                 
@@ -139,6 +157,7 @@ async function evaluate_API_request(json_api_request, res) {
                     res.status(403);
                     res.setHeader('Access-Control-Allow-Origin', '*');
                     res.setHeader('Access-Control-Allow-Headers', '*');
+                    res.setHeader('Access-Control-Request-Method', '*');
                     const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
                     res.send(response);
                 
@@ -150,6 +169,7 @@ async function evaluate_API_request(json_api_request, res) {
                 res.status(400);
                 res.setHeader('Access-Control-Allow-Origin', '*');
                 res.setHeader('Access-Control-Allow-Headers', '*');
+                res.setHeader('Access-Control-Request-Method', '*');
                 const response = `HTTP 400 - API REQUEST RECEIVED, HOWEVER REQUESTED ACTION IS NOT SUPPORTED OR UNDERSTOOD BY THE SERVER- ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
                 res.send(response);
 
