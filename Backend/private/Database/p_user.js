@@ -2,7 +2,7 @@
 const config = require('../../init_config.json');
 const support = require('../support.js');
 const bcrypt = require('bcrypt');
-const db = require('../Database/database_access.js');
+const db = require('./database_access.js');
 
 
 

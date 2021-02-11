@@ -4,7 +4,7 @@
 const config = require('../../init_config.json');
 const support = require('../support.js');
 const bcrypt = require('bcrypt');
-const db = require('../Database/database_access.js');
+const db = require('./database_access.js');
 
 // Declare a new Asynchronous function using promises
 async function set_password(package) {
@@ -64,53 +64,34 @@ async function set_password(package) {
 async function compare_password(package) {
     return new Promise((resolve, reject) => {
         // verify we were provided a suitable object
-        if (package.hasOwnProperty('password') && package.hasOwnProperty('user_id')) {
-            support.log("debug", `p_credential.js - compare_password : Comparing provided password for user_id : ${package.user_id}`);
+        if (package.hasOwnProperty('password') && package.hasOwnProperty('hash')) {
+            support.log("debug", `p_credential.js - compare_password : Comparing provided hash ${package.hash}`);
+            bcrypt.compare(package.password, package.hash).then((result) => {
+                // handle the two conditions of the comparison
+                if (result == true) {
+                    support.log("debug", "p_credential.js - compare_password : Password Comparison Operation Successful - MATCH ");
 
-            // retrieve password hash for comparison
-            const hash_retrieval_query = `SELECT hash
-            FROM ${config.db_rootDatabase}.credential
-            WHERE id = ${package.user_id};`
+                    const r_msg = {
+                        "status": 1,
+                        "Message": `Password MATCHES provided hash`,
+                        "result": true
+                    };
 
-            // ask the database for the credentials stored hash
-            db.promise_pool.query(hash_retrieval_query).then((rows) => {
-                //save the result
-                const stored_hash = rows[0][0].hash;
+                    resolve(r_msg);
+                } else {
+                    support.log("debug", "p_credential.js - compare_password : Password Comparison Operation Successful - DOES NOT MATCH");
+                    const r_msg = {
+                        "status": 1,
+                        "Message": `Password successfully set for user_id ${package.user_id}`,
+                        "result": false
+                    };
 
-                //ask bcrypt if we got the right password
-                bcrypt.compare(package.password, stored_hash).then((result) => {
-                    // handle the two conditions of the comparison
-                    if (result == true) {
-                        support.log("debug", "p_credential.js - compare_password : Password Comparison Operation Successful - MATCH ");
+                    resolve(r_msg);
+                }
 
-                        const r_msg = {
-                            "status": 1,
-                            "Message": `Password successfully set for user_id ${package.user_id}`,
-                            "result": true
-                        };
-
-                        resolve(r_msg);
-                    } else {
-                        support.log("debug", "p_credential.js - compare_password : Password Comparison Operation Successful - DOES NOT MATCH");
-                        const r_msg = {
-                            "status": 1,
-                            "Message": `Password successfully set for user_id ${package.user_id}`,
-                            "result": false
-                        };
-
-                        resolve(r_msg);
-                    }
-
-                }).catch((error) => {
-                    // our comparison failed, log the incident
-                    support.log("error", "p_credential.js - compare_password : Unable to compare Password bcrypt failed to service the operation")
-                    // reject our promise, promoting the application pools failure as needed.
-                    reject(error);
-
-                })
             }).catch((error) => {
-                // our query failed, log the incident
-                support.log("error", "p_credential.js - compare_password : Unable to compare Password db.promise_pool failed to service the query")
+                // our comparison failed, log the incident
+                support.log("error", "p_credential.js - compare_password : Unable to compare Password bcrypt failed to service the operation")
                 // reject our promise, promoting the application pools failure as needed.
                 reject(error);
 

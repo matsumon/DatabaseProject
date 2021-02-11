@@ -54,7 +54,7 @@ LOG ON REQUEST JSON
 {
     username: "",
     token: NULL,
-    operation: "LOGON"
+    operation_name: "LOGON"
     task_data:{
         password: "",
         role: ""

@@ -1,4 +1,5 @@
 const config = require('../init_config.json');
+const crypto = require('crypto'); // import cryptographic support to allow us to generate fast HMACS for secure session tokens
 
 module.exports = {
     getBasicDate: function () {
@@ -106,7 +107,7 @@ module.exports = {
     create_sessionToken: function () {
         const random_iv = crypto.randomBytes(25).toString('base64').slice(0, 25) // generates a 25char length random IV for crypto.createHmac(sha256)
         const random_secret = crypto.randomBytes(60).toString('base64').slice(0, 60); // generates a 60char random secret for crypto.createHmac(sha256) 
-        const time_secret_value = getBasicDate() + random_iv + random_secret; // ties our random value generations to the time of request making
+        const time_secret_value = this.getBasicDate + random_iv + random_secret; // ties our random value generations to the time of request making
                                                                                       //      our token derivation time dependant and harder compute
                                                                                       //      generate our token from a SHA256 hash of the iv and secret
         const token = crypto.createHmac('sha256', random_iv)

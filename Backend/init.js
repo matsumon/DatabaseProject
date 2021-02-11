@@ -19,11 +19,7 @@ require('./private/routes/error.js')(app); // include the error page Handlers
 
 
 // Express JSON Interpreter Config
-var bodyParser = require('body-parser'); // Set up JSON Support
-app.use(bodyParser.urlencoded({
-    extended: false
-})); // Enable Decode of URL Encoded Post Requests
-app.use(bodyParser.json()); // Enable Decode of Body Encoded Post Requests
+app.use(express.json()); // Enable Decode of Body Encoded Post Requests
 
 
 support.log("debug", "PRE_INIT - Configuring HTTP Server");
@@ -44,3 +40,7 @@ httpServer.listen(config.http_port);
 //#endregion
 
 support.log("info", "SERVER INITIALIZED");
+
+
+
+
