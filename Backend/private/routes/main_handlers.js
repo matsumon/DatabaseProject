@@ -7,6 +7,8 @@ module.exports = function (app) {
     //#region main page GET Request Handler{}
     app.get('/', function (req, res) {
         res.status(200);
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Headers', '*');
         var time = support.getBasicDate(); // Create time stamp for incident
         var response = "HTTP 200 - OK : PONG! - " + time;
         res.send(response);
@@ -18,6 +20,8 @@ module.exports = function (app) {
     //#region API interface JSON PUT handler
     app.post('/', function (req, res) {
         res.status(200);
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Headers', '*');
         var time = support.getBasicDate(); // Create time stamp for incident
         var response = "HTTP 200 - OK : API REQUEST RECEIVED - " + time;
         res.send(response);
@@ -47,6 +51,8 @@ module.exports = function (app) {
             support.log("error", `main_handlers.js - app.post(/API/) : Error Executing API request. Message as follows : ${error}`)
 
             res.status(500);
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Headers', '*');
             var time = support.getBasicDate(); // Create time stamp for incident
             var response = "HTTP 500 - SERVER ERROR : API REQUEST RECEIVED, UNABLE TO PROCESS DUE TO SERVER ERROR- " + time;
             res.send(response);
