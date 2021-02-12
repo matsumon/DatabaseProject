@@ -25,7 +25,7 @@ module.exports = function (app) {
         res.setHeader('Access-Control-Allow-Headers', '*');
         res.setHeader('Access-Control-Request-Method', '*');
         var time = support.getBasicDate(); // Create time stamp for incident
-        var response = "HTTP 200 - OK : API REQUEST RECEIVED - " + time;
+        var response = "HTTP 200 - OK : API REQUEST RECEIVED - NO ACTION TAKEN USE /API to get access" + time;
         res.send(response);
 
 
