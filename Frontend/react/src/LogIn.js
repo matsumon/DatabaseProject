@@ -3,14 +3,43 @@ import { useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import "antd/dist/antd.css";
-
 const { Option } = Select;
-
+const axios = require('axios');
 function LogIn() {
   let history = useHistory();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [userRole, setUserRole] = useState("");
+  // axios.post('http://localhost:53200/api', {
+  //    "username": "test_user00",
+  //    "token": null,
+  //     "operation_name": "LOGON",
+  //    "task_data":{
+  //      "password": "bobytest",
+  //    "role": "" }
+  // })
+  // .then(function (response) {
+  //   console.log(response);
+  // })
+  // .catch(function (error) {
+  //   console.log(error);
+  // });
+  // axios.get(`http://localhost:53200`)
+  // .then(function (response) {
+  //   // handle success
+  //   console.log(response);
+  // })
+  // .catch(function (error) {
+  //   // handle error
+  //   console.log(error);
+  // })
+  // .then(function () {
+  //   // always executed
+  // });
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', 'http://localhost:53200')
+
+  xhr.send(JSON.stringify({ "username": "test_user00", "token": null,  "operation_name": "LOGON", "task_data":{ "password": "bobytest", "role": "" }} ))
   function handleLogIn() {
     history.push("/Users");
     console.log(history);

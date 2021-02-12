@@ -19,9 +19,9 @@ function Role() {
    * is re-rendered. This data represents the current state of data in sql
    */
   const [rawData, setRawData] = useState([
-    { id: 1, roleTitle: "Pilot" },
-    { id: 2, roleTitle: "Capitain" },
-    { id: 3, roleTitle: "Officer" },
+    { id: 1, roleTitle: "Pilot", userID: "1, 2, 3" },
+    { id: 2, roleTitle: "Capitain", userID: "1, 2, 3" },
+    { id: 3, roleTitle: "Officer",userID: "1, 2, 3" },
   ]);
   const userOptions = _.map(
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -29,6 +29,7 @@ function Role() {
       return <Option key={index} value={element} label={element} />;
     }
   );
+  userOptions.push(<Option key={userOptions.length} value={"None"} label={"None"} />)
   function handleSelectUserChange(value) {
     console.log(value);
     setRoleUserID(value);
@@ -43,6 +44,7 @@ function Role() {
         key: index,
         id: object.id,
         roleTitle: object.roleTitle,
+        userID: object?.userID ? object?.userID: null
       };
     });
   }
@@ -58,9 +60,9 @@ function Role() {
       return;
     }
     let tempRawData = rawData;
-    tempRawData.push({ id: "", roleTitle: roleTitle, newUser: roleUserID });
+    tempRawData.push({ id: "", roleTitle: roleTitle, userID: roleUserID });
     setRoleTitle("");
-    setRoleUserID("");
+    // setRoleUserID("");
     setRawData(tempRawData);
     setRender(!render);
   }
@@ -112,6 +114,7 @@ function Role() {
       <Table style={{ width: "auto" }} dataSource={dataToBeUsed}>
         <Column title="ID" dataIndex="id" key="id" />
         <Column title="Roles" dataIndex="roleTitle" key="roleTitle" />
+        <Column title="User ID's" dataIndex="userID" key="userID" />
       </Table>
       <Card bordered style={{ width: 300 }}>
         <div style={{ marginBottom: "16px" }}>
