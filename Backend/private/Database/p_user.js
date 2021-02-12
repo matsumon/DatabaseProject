@@ -41,8 +41,26 @@ async function create_user(package) {
     });
 
 };
-async function update_user();
-async function remove_user();
+async function update_user(package){
+    return new Promise((resolve,reject)=>{
+        if(package.hasOwnProperty('username')&&
+        package.hasOwnProperty('email')&&
+        package.hasOwnProperty('username')){
+            support.log("debug", `p_user.js - update_user : updating_user ${package.username}`);
+
+        }
+    })
+};
+async function remove_user(package){
+    return new Promise((resolve,reject)=>{
+        if(package.hasOwnProperty('id')){
+                support.log("debug", `p_user.js - remove_user : Removing user ${package.id}`);
+
+
+
+        }
+    });
+}
 
 
 
