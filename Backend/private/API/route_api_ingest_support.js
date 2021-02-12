@@ -1,6 +1,10 @@
 const support = require('../support.js'); // bring in support functions
 const logon = require('./p_logon_handler') // bring in logon handler functions
 const session = require('../Database/p_session') // import session management handlers
+const credential = require('../Database/p_credential') // import credential management handlers
+const user = require('../Database/p_user'); // import user management handlers
+const { rm } = require('fs');
+
 
 async function parse_http_JsonBody(req) {
     return new Promise((resolve, reject) => {
@@ -45,7 +49,7 @@ async function evaluate_API_request(json_api_request, res) {
     support.log("debug", `route_api_ingest_support.js - evaluate_API_request : Evaluating the API request for routing to proper functions : \n ${JSON.stringify(json_api_request)}`)
     return new Promise((resolve, reject) => {
         switch (json_api_request.operation_name) {
-            case 'LOGON':
+            case 'LOGON':   // DONE
                 support.log("debug", `route_api_ingest_support.js - evaluate_API_request : LOGON REQUEST, Routing to Logon Handler`)
                 
                 // Send info to logon stuff
@@ -83,9 +87,28 @@ async function evaluate_API_request(json_api_request, res) {
 
 
                 break;
-            case "ADD_USR":
+            case "ADD_SESSION": // DONE
                 logon.validate_session(json_api_request).then((r_msg) => { // session is valid
+                    session.create_insecure_arbitrary_session(json_api_request).then((r_msg)=>{
+                        // send required response w/ resulting session ID
+                        res.status(200);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `${JSON.stringify(r_msg)}`;
+                        res.send(response);
 
+                    }).catch((error) =>{
+                        // return error for bad session creation
+                        support.log("Error", `route_api_ingest_support.js - Could not Add_Session : Unknown Error : \n ${error}`)
+                        res.status(500);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `HTTP 500 - CREDENTIALS VALIDATED - COULD NOT ADD_SESSION : API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                        res.send(response);
+                        
+                    });
 
     
 
@@ -99,9 +122,64 @@ async function evaluate_API_request(json_api_request, res) {
                 
                 });
                 break;
-            case "ADD_SESSION":
+            case "ADD_CRED":    // DONE
                 logon.validate_session(json_api_request).then((r_msg) => { // session is valid
+                    credential.create_credential().then((r_msg)=> {
+                        // send required response w/ resulting credential ID
+                        res.status(200);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `${JSON.stringify(r_msg)}`;
+                        res.send(response);
 
+                    }).catch((error)=>{
+                        // return error for bad session
+                        support.log("Error", `route_api_ingest_support.js - Could not ADD_CRED : Unknown Error : \n ${error}`)
+                        res.status(500);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `HTTP 500 - CREDENTIALS VALIDATED - COULD NOT ADD_CRED: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                        res.send(response);
+                        
+                    })
+    
+
+                }).catch((error) => {   // session is invalid or error occurred
+                    res.status(403);
+                    res.setHeader('Access-Control-Allow-Origin', '*');
+                    res.setHeader('Access-Control-Allow-Headers', '*');
+                    res.setHeader('Access-Control-Request-Method', '*');
+                    const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                    res.send(response);
+                
+                });
+                break;
+            case "UPDATE_CRED": // DONE
+                logon.validate_session(json_api_request).then((r_msg) => { // session is valid
+                    credential.update_credential(json_api_request.task_data).then((r_msg)=>
+                    {
+                        // send required response w/ resulting cred update msg
+                        res.status(200);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `${JSON.stringify(r_msg)}`;
+                        res.send(response);
+
+                    }).catch((error)=>{
+                        // return error for bad session
+                        support.log("Error", `route_api_ingest_support.js - Could not UPDATE_CRED : Unknown Error : \n ${error}`)
+                        res.status(500);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `HTTP 500 - CREDENTIALS VALIDATED - COULD NOT UPDATE_CRED: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                        res.send(response);
+
+
+                    })
 
     
 
@@ -115,6 +193,42 @@ async function evaluate_API_request(json_api_request, res) {
                 
                 });
                 break;
+            case "ADD_USR": // DONE
+                logon.validate_session(json_api_request).then((r_msg) => { // session is valid
+                    user.create_user(json_api_request.task_data).then((r_msg) => {
+                        // send required response w/ resulting user creation msg
+                        res.status(200);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `${JSON.stringify(r_msg)}`;
+                        res.send(response);
+
+                    }).catch((error)=>{
+
+                        // return error for bad user creation
+                        support.log("Error", `route_api_ingest_support.js - Could not ADD_USR : Unknown Error : \n ${error}`)
+                        res.status(500);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `HTTP 500 - CREDENTIALS VALIDATED - COULD NOT ADD_USR: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                        res.send(response);
+
+                    })
+    
+
+                }).catch((error) => {   // session is invalid or error occurred
+                    res.status(403);
+                    res.setHeader('Access-Control-Allow-Origin', '*');
+                    res.setHeader('Access-Control-Allow-Headers', '*');
+                    res.setHeader('Access-Control-Request-Method', '*');
+                    const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                    res.send(response);
+                
+                });
+                break;
+
             case "ADD_ROLE":
                 logon.validate_session(json_api_request).then((r_msg) => { // session is valid
 
@@ -131,38 +245,8 @@ async function evaluate_API_request(json_api_request, res) {
                 
                 });
                 break;
-            case "ADD_CRED":
-                logon.validate_session(json_api_request).then((r_msg) => { // session is valid
-
-
-    
-
-                }).catch((error) => {   // session is invalid or error occurred
-                    res.status(403);
-                    res.setHeader('Access-Control-Allow-Origin', '*');
-                    res.setHeader('Access-Control-Allow-Headers', '*');
-                    res.setHeader('Access-Control-Request-Method', '*');
-                    const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
-                    res.send(response);
-                
-                });
-                break;  
-            case "UPDATE_CRED":
-                logon.validate_session(json_api_request).then((r_msg) => { // session is valid
-
-
-    
-
-                }).catch((error) => {   // session is invalid or error occurred
-                    res.status(403);
-                    res.setHeader('Access-Control-Allow-Origin', '*');
-                    res.setHeader('Access-Control-Allow-Headers', '*');
-                    res.setHeader('Access-Control-Request-Method', '*');
-                    const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
-                    res.send(response);
-                
-                });
-                break;
+              
+            
             // Deal with BAD API requests
 
             default:
