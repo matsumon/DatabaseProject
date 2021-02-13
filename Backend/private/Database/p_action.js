@@ -80,7 +80,47 @@ async function del_Action(package){
     
 }
 
+async function update_Action(package) {
+    // this will create a new action
+    return new Promise((resolve, reject) => {
+        support.log("debug", `p_action.js - update_Action : package content - ${JSON.stringify(package)}`)
+        if(package.task_data.hasOwnProperty("id")&&
+            package.task_data.hasOwnProperty("task_name")){
 
+            support.log("debug", `p_action.js - update_Action : updating action id - ${package.task_data.task_name}`);
+            // first build a query that will create a new action object and return the PK field 'id' from its creation
+
+            const action_update_query = `UPDATE ${config.db_rootDatabase}.action SET action_name = "${package.task_data.task_name}" WHERE id = "${package.task_data.id}";`;
+            
+            
+            db.promise_pool.query(action_update_query).then((rows) => {
+                support.log("debug", `p_action.js - update_action : action Updated`);
+
+                const r_msg = {
+                    "status": 1,
+                    "Message": `Action Successfully updated`,
+                };
+
+                // resolve returning the data package containing the details
+                resolve(r_msg);
+
+
+            }).catch((error) => {
+                // our query failed, log the incident
+                support.log("error", "p_action.js - update_Action : Unable to create new action db.promise_pool failed to service the query")
+                support.log("error", `Error Message: - ${error}`)
+                // reject our promise, promoting the application pools failure as needed.
+                reject(error);
+            })
+
+        }else{
+            support.log("error", "p_action.js - update_Action : Aborted Execution due to unexpected or missing Key-Value pairs");
+            reject("Supplied Object does not contain the expected key-value pairs to complete operation, Operation aborted.");
+        }
+        
+    });
+}
 
 module.exports.add_Action = add_Action;
 module.exports.del_Action = del_Action;
+module.exports.update_Action = update_Action;

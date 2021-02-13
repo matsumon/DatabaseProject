@@ -127,3 +127,14 @@ DEL_ACTION_REQ = {
         "id" : "1"
     }
 }
+
+// Update Action
+UPDATE_ACTION_REQ = {
+    "username": "test_user00",
+    "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+    "operation_name": "UPDATE_ACTION",
+    "task_data": {
+        "id" : "11",
+        "task_name": "NEW_NAME"
+    }
+}
