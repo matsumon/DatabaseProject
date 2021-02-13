@@ -41,30 +41,7 @@ async function create_user(package) {
     });
 
 };
-async function update_user(package){
-    return new Promise((resolve,reject)=>{
-        if(package.hasOwnProperty('username')&&
-        package.hasOwnProperty('email')&&
-        package.hasOwnProperty('username')){
-            support.log("debug", `p_user.js - update_user : updating_user ${package.username}`);
-
-        }
-    })
-};
-async function remove_user(package){
-    return new Promise((resolve,reject)=>{
-        if(package.hasOwnProperty('id')){
-                support.log("debug", `p_user.js - remove_user : Removing user ${package.id}`);
-
-
-
-        }
-    });
-}
-
 
 
 // export required functions
 module.exports.create_user = create_user;
-module.exports.update_user = update_user;
-module.exports.remove_user = remove_user;
