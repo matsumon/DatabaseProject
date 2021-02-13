@@ -65,9 +65,21 @@ GET_ROLE_IDS_REQ = {
     "task_data": {}
 }
 
+// GET SESSIONS
 GET_SESSIONS_REQ = {
     "username": "test_user00",
     "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
     "operation_name": "GET_SESSIONS",
     "task_data": {}
 }
+
+// GET Credentials
+
+GET_CREDENTIALS_REQ = {
+    "username": "test_user00",
+    "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+    "operation_name": "GET_CREDS",
+    "task_data": {}
+}
+
+

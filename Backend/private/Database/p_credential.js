@@ -220,6 +220,35 @@ async function update_credential(package) {
     });
 }
 
+async function get_all_credential(){
+    return new Promise((resolve, reject )=>{
+        support.log("debug", "p_credential.js - get_all_credential: retrieving credentials");
+
+        const get_all_credentials_query =`SELECT * FROM ${config.db_rootDatabase}.credential`
+
+        db.promise_pool.query(get_all_credentials_query).then((rows) =>{
+
+            support.log("debug", `p_credential.js - get_all_credential: Retrieved ALL credentials`);
+            const r_msg = {
+                "status": 1,
+                "Message": `credentials Successfully Retrieved`,
+                "Results": rows[0]
+            };
+            // resolve returning the data package containing the details
+            resolve(r_msg);
+
+        }).catch((error)=>{
+            support.log("error", `p_credential.js - get_all_credential: unable to create session db pool failed to service the request: \n ${error}`);
+                const r_msg = {
+                    "status": 0,
+                    "Message": "Can NOT get all credentials, db pool unable to service request",
+                    "error" : error
+                };
+                reject(r_msg);
+        })
+    })
+
+}
 
 //export required module components
 module.exports.set_password = set_password;
@@ -227,3 +256,4 @@ module.exports.compare_password = compare_password;
 module.exports.create_credential = create_credential;
 module.exports.remove_credential = remove_credential;
 module.exports.update_credential = update_credential;
+module.exports.get_all_credential= get_all_credential;
