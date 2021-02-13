@@ -49,9 +49,18 @@ ADD_USERS_REQ = {
     }
 }
 
+// GET USER IDS
 GET_USERS_IDS_REQ = {
     "username": "test_user00",
     "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
     "operation_name": "GET_USRIDS",
+    "task_data": {}
+}
+
+// GET ROLE IDS
+GET_ROLE_IDS_REQ = {
+    "username": "test_user00",
+    "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+    "operation_name": "GET_ROLEIDS",
     "task_data": {}
 }

@@ -48,4 +48,28 @@ async function new_role(package) {
     })
 }
 
+async function get_roleids(){
+    return new Promise((resolve, reject)=>{
+        support.log("debug", "p_role.js  - get_roleids Getting all Role IDS");
+
+        const get_userids_query = `SELECT id FROM ${config.db_rootDatabase}.role;`
+
+        db.promise_pool.query(get_userids_query).then((rows) => {
+            support.log("debug", `p_role.js - get_roleids : Retrieved ALL ROLE ID's`);
+            const r_msg = {
+                "status": 1,
+                "Message": `User ids Successfully Retrieved`,
+                "Results": rows[0]
+            };
+            // resolve returning the data package containing the details
+            resolve(r_msg);
+        }).catch((error) => {
+            // our query failed, log the incident
+            support.log("error", "p_role.js - get_roleids : Unable to get role ids db.promise_pool failed to service the query")
+            // reject our promise, promoting the application pools failure as needed.
+            reject(error);
+        })
+    });
+}
 module.exports.new_role = new_role;
+module.exports.get_roleids = get_roleids;
