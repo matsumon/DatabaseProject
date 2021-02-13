@@ -15,11 +15,11 @@ ADD_SESSION_REQ = {
     "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
     "operation_name": "ADD_SESSION",
     "task_data": {
+        "id": "1",
         "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
-        "id": "",
-        "exp_date": "",
-        "user_req_date": "",
-        "created_at": ""
+        "exp_date": "2021-02-12",
+        "user_req_date": "2021-02-12",
+        "created_at": "2021-02-12"
     }
 }
 

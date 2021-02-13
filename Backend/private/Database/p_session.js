@@ -140,12 +140,11 @@ async function remove_session(session_id) {
 async function create_insecure_arbitrary_session(package){
     return new Promise((resolve, reject) => {
         support.log("debug", "p_session.js - create_insecure_arbitrary_session : Creating new session");
+        support.log("debug", `p_session.js - create_insecure_arbitrary_session : Supplied Package = ${JSON.stringify(package)}`);
 
         // verify we are given required data to init a session
 
         if (package.task_data.hasOwnProperty('id')) {
-
-            
             // Create the query string to generate the session
 
             const session_creation_query = `INSERT into ${config.db_rootDatabase}.session
@@ -169,7 +168,7 @@ async function create_insecure_arbitrary_session(package){
                 const r_msg = {
                     "status": 1,
                     "Message": `Session successfully created for user!`,
-                    "token" : `${token}`
+                    "id" : `${rows[0].insertId}`
                 };
 
                 // resolve returning the data package containing the details
