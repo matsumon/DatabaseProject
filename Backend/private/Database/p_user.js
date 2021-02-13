@@ -93,7 +93,7 @@ async function get_all_userid() {
     return new Promise((resolve, reject) => {
         support.log("debug", "p_user.js - get_all_userid: Getting all UserID");
 
-        const get_userids_query = ` SELECT id FROM ${config.db_rootDatabase}.user;`
+        const get_userids_query = `SELECT id FROM ${config.db_rootDatabase}.user;`
 
         db.promise_pool.query(get_userids_query).then((rows) => {
             support.log("debug", `p_user.js - get_all_userid : Retrieved ALL USERS ID's`);
@@ -120,4 +120,4 @@ module.exports.create_user = create_user;
 module.exports.update_user = update_user;
 module.exports.remove_user = remove_user;
 module.exports.get_users = get_users;
-module.exports.get_all_userid = get_users;
+module.exports.get_all_userid = get_all_userid;
