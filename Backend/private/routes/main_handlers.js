@@ -9,6 +9,7 @@ module.exports = function (app) {
         res.status(200);
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Headers', '*');
+        res.setHeader('Access-Control-Request-Method', '*');
         var time = support.getBasicDate(); // Create time stamp for incident
         var response = "HTTP 200 - OK : PONG! - " + time;
         res.send(response);
@@ -22,8 +23,9 @@ module.exports = function (app) {
         res.status(200);
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Headers', '*');
+        res.setHeader('Access-Control-Request-Method', '*');
         var time = support.getBasicDate(); // Create time stamp for incident
-        var response = "HTTP 200 - OK : API REQUEST RECEIVED - " + time;
+        var response = "HTTP 200 - OK : API REQUEST RECEIVED - NO ACTION TAKEN USE /API to get access" + time;
         res.send(response);
 
 
@@ -48,13 +50,14 @@ module.exports = function (app) {
 
         }).catch((error) =>{
 
-            support.log("error", `main_handlers.js - app.post(/API/) : Error Executing API request. Message as follows : ${error}`)
+            support.log("error", `main_handlers.js - app.post(/API/) : Error Executing API request. Message as follows : ${JSON.stringify(error)}`)
 
             res.status(500);
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.setHeader('Access-Control-Allow-Headers', '*');
+            res.setHeader('Access-Control-Request-Method', '*');
             var time = support.getBasicDate(); // Create time stamp for incident
-            var response = "HTTP 500 - SERVER ERROR : API REQUEST RECEIVED, UNABLE TO PROCESS DUE TO SERVER ERROR- " + time;
+            var response = `HTTP 500 - SERVER ERROR : API REQUEST RECEIVED, UNABLE TO PROCESS DUE TO SERVER ERROR - ${JSON.stringify(error)}` + time;
             res.send(response);
 
 

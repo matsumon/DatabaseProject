@@ -131,8 +131,14 @@ async function validate_user(package) {
     });
 };
 
-async function validate_session(){
-    // code to validate user sessions
+async function validate_session(package){
+    return new Promise((resolve, reject) => {
+        if(true){
+            resolve()
+        }else{
+            reject()
+        }
+    })
 };
 
 //export required module components
