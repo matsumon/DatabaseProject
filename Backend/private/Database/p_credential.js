@@ -172,15 +172,15 @@ async function remove_credential(credential_id) {
 async function update_credential(package) {
     return new Promise((resolve, reject) => {
 
-        if (package.hasOwnProperty('current_id')&&
-        package.hasOwnProperty("new_id")) {
+        if (package.hasOwnProperty('credential_id')&&
+        package.hasOwnProperty("new_user_id")) {
             support.log("debug", `p_credential.js - update_credential : Updating Credential id ${package.id}`);
 
             const update_credential_query = `UPDATE ${config.db_rootDatabase}.credential
                 SET
-                id = ${package.new_id}
+                user_id = ${package.new_user_id}
                 WHERE
-                id = ${package.current_id};`
+                id = ${package.credential_id};`
 
             db.promise_pool.query(update_credential_query).then(() => {
                 support.log("debug", "p_credential.js - update_credential : updated Credential")

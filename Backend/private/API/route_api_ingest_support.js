@@ -586,7 +586,7 @@ async function evaluate_API_request(json_api_request, res) {
                 });
             
                 break;            
-            case "GET_ROLES":
+            case "GET_ROLES":       // DONE
                 logon.validate_session(json_api_request).then((r_msg) => { // session is valid
                     role.get_roles().then(r_msg => {
                         // send required response w/ resulting new ROLE ID
@@ -624,7 +624,7 @@ async function evaluate_API_request(json_api_request, res) {
             
                 break;            
 
-                // Deal with BAD API requests
+            // Deal with BAD API requests
             default:
 
                 res.status(400);
