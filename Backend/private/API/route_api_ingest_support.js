@@ -1,9 +1,10 @@
-const support = require('../support.js'); // bring in support functions
-const logon = require('./p_logon_handler') // bring in logon handler functions
-const session = require('../Database/p_session') // import session management handlers
-const credential = require('../Database/p_credential') // import credential management handlers
-const user = require('../Database/p_user'); // import user management handlers
-const role = require('../Database/p_role'); // import role_management handlers
+const support = require('../support.js');               // bring in support functions
+const logon = require('./p_logon_handler')              // bring in logon handler functions
+const session = require('../Database/p_session')        // import session management handlers
+const credential = require('../Database/p_credential')  // import credential management handlers
+const user = require('../Database/p_user');             // import user management handlers
+const role = require('../Database/p_role');             // import role_management handlers
+const action = require('../Database/p_action')          // import action management
 const { config } = require('winston');
 
 
@@ -408,7 +409,7 @@ async function evaluate_API_request(json_api_request, res) {
                 });
             
                 break;
-            case "GET_CREDS":
+            case "GET_CREDS":       // DONE
                 logon.validate_session(json_api_request).then((r_msg) => { // session is valid
                     credential.get_all_credential().then(r_msg => {
                         // send required response w/ resulting new ROLE ID
@@ -443,7 +444,41 @@ async function evaluate_API_request(json_api_request, res) {
                 });
             
                 break;
+            case "ADD_ACTION":      // DONE
+                logon.validate_session(json_api_request).then((r_msg) => { // session is valid
+                    action.add_Action(json_api_request).then(r_msg => {
+                        // send required response w/ resulting new ROLE ID
+                        res.status(200);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `${JSON.stringify(r_msg)}`;
+                        res.send(response);
+
+
+                    }).catch(error =>{
+                        // return error for bad session creation
+                        support.log("Error", `route_api_ingest_support.js - Could not ADD_ACTION: Unknown Error : \n ${error}`)
+                        res.status(500);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `HTTP 500 - CREDENTIALS VALIDATED - COULD NOT ADD_ACTION : API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                        res.send(response);
+
+                    })
+
+                }).catch((error) => {   // session is invalid or error occurred
+                    res.status(403);
+                    res.setHeader('Access-Control-Allow-Origin', '*');
+                    res.setHeader('Access-Control-Allow-Headers', '*');
+                    res.setHeader('Access-Control-Request-Method', '*');
+                    const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                    res.send(response);
+                
+                });
             
+                break;
             // Deal with BAD API requests
             default:
 
