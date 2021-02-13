@@ -121,6 +121,31 @@ async function update_Action(package) {
     });
 }
 
+async function get_Action_ids(){
+    return new Promise((resolve, reject)=>{
+        support.log("debug", "p_action.js - get_action_ids Getting all action IDS");
+
+        const get_userids_query = `SELECT id FROM ${config.db_rootDatabase}.action;`
+
+        db.promise_pool.query(get_userids_query).then((rows) => {
+            support.log("debug", `p_action.js- get_action_ids : Retrieved ALL action ID's`);
+            const r_msg = {
+                "status": 1,
+                "Message": `User ids Successfully Retrieved`,
+                "Results": rows[0]
+            };
+            // resolve returning the data package containing the details
+            resolve(r_msg);
+        }).catch((error) => {
+            // our query failed, log the incident
+            support.log("error", "p_action.js- get_action_ids : Unable to get action ids db.promise_pool failed to service the query")
+            // reject our promise, promoting the application pools failure as needed.
+            reject(error);
+        })
+    });
+}
+
 module.exports.add_Action = add_Action;
 module.exports.del_Action = del_Action;
 module.exports.update_Action = update_Action;
+module.exports.get_Action_ids = get_Action_ids;
