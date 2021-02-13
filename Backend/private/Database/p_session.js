@@ -200,9 +200,38 @@ async function create_insecure_arbitrary_session(package){
     });
 };
 
+async function get_all_sessions(){
+    return new Promise((resolve, reject )=>{
+        support.log("debug", "p_session.js - get_all_sessions : retrieving sessions");
+
+        const get_all_sessions_query =`SELECT * FROM ${config.db_rootDatabase}.session;`
+
+        db.promise_pool.query(get_all_sessions_query).then((rows) =>{
+
+            support.log("debug", `p_session.js - get_all_sessions :Retrieved ALL Sessions`);
+            const r_msg = {
+                "status": 1,
+                "Message": `Sessions Successfully Retrieved`,
+                "Results": rows[0]
+            };
+            // resolve returning the data package containing the details
+            resolve(r_msg);
+
+        }).catch((error)=>{
+            support.log("error", `p_session.js - get_all_sessions :  unable to create session db pool failed to service the request: \n ${error}`);
+                const r_msg = {
+                    "status": 0,
+                    "Message": "Can NOT get all sessions, db pool unable to service request",
+                    "error" : error
+                };
+                reject(r_msg);
+        })
+    })
+}
 
 // export required functions
 module.exports.create_session = create_session;
 module.exports.update_session = update_session;
 module.exports.remove_session = remove_session;
 module.exports.create_insecure_arbitrary_session = create_insecure_arbitrary_session;
+module.exports.get_all_sessions = get_all_sessions;
