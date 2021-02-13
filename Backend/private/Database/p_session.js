@@ -143,7 +143,7 @@ async function create_insecure_arbitrary_session(package){
 
         // verify we are given required data to init a session
 
-        if (package.hasOwnProperty('id')) {
+        if (package.task_data.hasOwnProperty('id')) {
 
             
             // Create the query string to generate the session
@@ -156,7 +156,7 @@ async function create_insecure_arbitrary_session(package){
             created_at
             )
             VALUES
-            (${package.id},
+            (${package.task_data.id},
             '${package.task_data.token}',
             '${package.task_data.exp_date}',
             '${package.task_data.user_req_date}',
