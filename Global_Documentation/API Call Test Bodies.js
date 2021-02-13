@@ -150,3 +150,11 @@ GET_Action_IDS_REQ = {
     "operation_name": "GET_ACTIONIDS",
     "task_data": {}
 }
+
+// GET ROLES
+GET_ROLES_REQ = {
+    "username": "test_user00",
+    "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+    "operation_name": "GET_ROLES",
+    "task_data": {}
+}
