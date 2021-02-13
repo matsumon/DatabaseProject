@@ -42,4 +42,12 @@ async function add_Action(package) {
     });
 }
 
+async function del_Action(package){
+    
+    
+}
+
+
+
 module.exports.add_Action = add_Action;
+module.exports.del_Action = del_Action;
