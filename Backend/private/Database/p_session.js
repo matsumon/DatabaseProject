@@ -204,7 +204,7 @@ async function get_all_sessions(){
     return new Promise((resolve, reject )=>{
         support.log("debug", "p_session.js - get_all_sessions : retrieving sessions");
 
-        const get_all_sessions_query =`SELECT * FROM ${config.db_rootDatabase}.session;`
+        const get_all_sessions_query =`SELECT id, user_id AS userID, token, exp_date AS expired, user_req_date AS requested, created_at AS created FROM ${config.db_rootDatabase}.session;`
 
         db.promise_pool.query(get_all_sessions_query).then((rows) =>{
 
