@@ -8,6 +8,7 @@ const role = require('../Database/p_role') // import role_management handlers
 
 async function parse_http_JsonBody(req) {
     return new Promise((resolve, reject) => {
+        support.log("debug", `route_api_ingest_support.js - parse_http_jasonBody : RAW REQUEST : ${req}`)
         try {
             // create body object 
             let body = '';
@@ -47,7 +48,6 @@ async function parse_http_JsonBody(req) {
 
 async function evaluate_API_request(json_api_request, res) {
     support.log("debug", `route_api_ingest_support.js - evaluate_API_request : Evaluating the API request for routing to proper functions : \n ${JSON.stringify(json_api_request)}`)
-    support.log("debug", `RAW REQUEST`)
     return new Promise((resolve, reject) => {
         switch (json_api_request.operation_name) {
             case 'LOGON':   // DONE
