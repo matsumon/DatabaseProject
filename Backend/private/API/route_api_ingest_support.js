@@ -127,7 +127,7 @@ async function evaluate_API_request(json_api_request, res) {
                 break;
             case "ADD_CRED":        // DONE
                 logon.validate_session(json_api_request).then((r_msg) => { // session is valid
-                    credential.create_credential().then((r_msg)=> {
+                    credential.add_insecure_arbitrary_credential(json_api_request).then((r_msg)=> {
                         // send required response w/ resulting credential ID
                         res.status(200);
                         res.setHeader('Access-Control-Allow-Origin', '*');

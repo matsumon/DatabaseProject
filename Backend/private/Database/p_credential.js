@@ -175,37 +175,37 @@ async function update_credential(package) {
         if (package.hasOwnProperty('id') &&
             package.hasOwnProperty('exp_date') &&
             package.hasOwnProperty('enabled')) {
-                support.log("debug", `p_credential.js - update_credential : Updating Credential id ${package.id}`);
+            support.log("debug", `p_credential.js - update_credential : Updating Credential id ${package.id}`);
 
-                const update_credential_query = `UPDATE ${config.db_rootDatabase}.credential
+            const update_credential_query = `UPDATE ${config.db_rootDatabase}.credential
                 SET
                 exp_date = "${package.exp_date}",
                 enabled = "${package.enabled}"
                 WHERE
                 id = ${package.id};`
 
-                db.promise_pool.query(update_credential_query).then(()=>{
-                    support.log("debug", "p_credential.js - update_credential : updated Credential")
+            db.promise_pool.query(update_credential_query).then(() => {
+                support.log("debug", "p_credential.js - update_credential : updated Credential")
 
-                    const r_msg = {
-                        "status": 1,
-                        "Message": "Credential updated",
-                    };
+                const r_msg = {
+                    "status": 1,
+                    "Message": "Credential updated",
+                };
 
-                    resolve(r_msg);
+                resolve(r_msg);
 
 
-                }).catch((error)=>{
-                    support.log("error", "p_credential.js - update_credential : Unable to update Credential db.promise_pool failed to service the query")
-                    const r_msg = {
-                        "status": 0,
-                        "Message": "Can NOT update credential insufficient information to preform request",
-                        "error" : error
-                    };
+            }).catch((error) => {
+                support.log("error", "p_credential.js - update_credential : Unable to update Credential db.promise_pool failed to service the query")
+                const r_msg = {
+                    "status": 0,
+                    "Message": "Can NOT update credential insufficient information to preform request",
+                    "error": error
+                };
 
-                    reject(r_msg);
+                reject(r_msg);
 
-                })
+            })
 
 
         } else {
@@ -220,13 +220,13 @@ async function update_credential(package) {
     });
 }
 
-async function get_all_credential(){
-    return new Promise((resolve, reject )=>{
+async function get_all_credential() {
+    return new Promise((resolve, reject) => {
         support.log("debug", "p_credential.js - get_all_credential: retrieving credentials");
 
-        const get_all_credentials_query =`SELECT id, 'hash', exp_date AS expired, created_date AS created, enabled, user_id AS userID FROM ${config.db_rootDatabase}.credential`
+        const get_all_credentials_query = `SELECT id, 'hash', exp_date AS expired, created_date AS created, enabled, user_id AS userID FROM ${config.db_rootDatabase}.credential`
 
-        db.promise_pool.query(get_all_credentials_query).then((rows) =>{
+        db.promise_pool.query(get_all_credentials_query).then((rows) => {
 
             support.log("debug", `p_credential.js - get_all_credential: Retrieved ALL credentials`);
             const r_msg = {
@@ -237,23 +237,65 @@ async function get_all_credential(){
             // resolve returning the data package containing the details
             resolve(r_msg);
 
-        }).catch((error)=>{
+        }).catch((error) => {
             support.log("error", `p_credential.js - get_all_credential: unable to create session db pool failed to service the request: \n ${error}`);
-                const r_msg = {
-                    "status": 0,
-                    "Message": "Can NOT get all credentials, db pool unable to service request",
-                    "error" : error
-                };
-                reject(r_msg);
+            const r_msg = {
+                "status": 0,
+                "Message": "Can NOT get all credentials, db pool unable to service request",
+                "error": error
+            };
+            reject(r_msg);
         })
     })
 
 }
 
+
+async function add_insecure_arbitrary_credential(package) {
+    if (package.task_data.hasOwnProperty("hash")&&
+    package.task_data.hasOwnProperty("exp_date")&&
+    package.task_data.hasOwnProperty("created_date")&&
+    package.task_data.hasOwnProperty("enabled")) {
+        // this will create a new credential, however you will still need to set the password after credential creation
+        return new Promise((resolve, reject) => {
+            support.log("debug", "p_credential.js - create_credential : Creating new Credential");
+            // first build a query that will create a new credential object and return the PK field 'id' from its creation
+            const credential_creation_query = `INSERT into ${config.db_rootDatabase}.credential
+        (hash,
+        exp_date,
+        created_date,
+        enabled)
+        VALUES('${package.task_data.hash}', ${package.task_data.exp_date}, ${package.task_data.created_date}, ${package.task_data.enabled});`
+            db.promise_pool.query(credential_creation_query).then((rows) => {
+                support.log("debug", `p_credential.js - create_credential : Credential Created - ID of new Object = ${rows[0].insertId}`);
+
+                const r_msg = {
+                    "status": 1,
+                    "Message": `Credential Successfully added`,
+                    "insertId": rows[0].insertId
+                };
+
+                // resolve returning the data package containing the details
+                resolve(r_msg);
+
+
+            }).catch((error) => {
+                // our query failed, log the incident
+                support.log("error", "p_credential.js - create_credential : Unable to create new Credential db.promise_pool failed to service the query")
+                // reject our promise, promoting the application pools failure as needed.
+                reject(error);
+            })
+        });
+    } else {
+
+    }
+
+}
 //export required module components
 module.exports.set_password = set_password;
 module.exports.compare_password = compare_password;
 module.exports.create_credential = create_credential;
 module.exports.remove_credential = remove_credential;
 module.exports.update_credential = update_credential;
-module.exports.get_all_credential= get_all_credential;
+module.exports.get_all_credential = get_all_credential;
+module.exports.add_insecure_arbitrary_credential = add_insecure_arbitrary_credential;

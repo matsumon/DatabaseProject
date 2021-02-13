@@ -91,7 +91,12 @@ ADD_CREDENTIALS_REQ = {
     "username": "test_user00",
     "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
     "operation_name": "ADD_CRED",
-    "task_data": {}
+    "task_data": {
+        "hash": "laksdjflksadjflkjasdlkfjlksdajflksda",
+        "exp_date": "2021-02-12",
+        "created_date": "2021-02-12",
+        "enabled" : "2021-02-12"
+    }
 }
 
 // UPDATE_Credentials
