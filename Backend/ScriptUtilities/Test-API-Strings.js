@@ -16,7 +16,10 @@ ADD_SESSION_REQ = {
     "operation_name": "ADD_SESSION",
     "task_data": {
         "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
-        "role": ""
+        "id": "",
+        "exp_date": "",
+        "user_req_date": "",
+        "created_at": ""
     }
 }
 
