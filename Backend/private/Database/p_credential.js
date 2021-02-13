@@ -172,17 +172,15 @@ async function remove_credential(credential_id) {
 async function update_credential(package) {
     return new Promise((resolve, reject) => {
 
-        if (package.hasOwnProperty('id') &&
-            package.hasOwnProperty('exp_date') &&
-            package.hasOwnProperty('enabled')) {
+        if (package.hasOwnProperty('current_id')&&
+        package.hasOwnProperty("new_id")) {
             support.log("debug", `p_credential.js - update_credential : Updating Credential id ${package.id}`);
 
             const update_credential_query = `UPDATE ${config.db_rootDatabase}.credential
                 SET
-                exp_date = "${package.exp_date}",
-                enabled = "${package.enabled}"
+                id = ${package.new_id}
                 WHERE
-                id = ${package.id};`
+                id = ${package.current_id};`
 
             db.promise_pool.query(update_credential_query).then(() => {
                 support.log("debug", "p_credential.js - update_credential : updated Credential")

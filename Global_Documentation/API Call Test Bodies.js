@@ -106,9 +106,8 @@ UPDATE_CREDENTIALS_REQ = {
     "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
     "operation_name": "UPDATE_CRED",
     "task_data": {
-        "id": "",
-        "enabled": "",
-        "exp_date": ""
+        "current_id": "",
+        "new_id" : ""
     }
 }
 
