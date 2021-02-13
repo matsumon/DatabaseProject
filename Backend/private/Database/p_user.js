@@ -41,30 +41,83 @@ async function create_user(package) {
     });
 
 };
-async function update_user(package){
-    return new Promise((resolve,reject)=>{
-        if(package.hasOwnProperty('username')&&
-        package.hasOwnProperty('email')&&
-        package.hasOwnProperty('username')){
+async function update_user(package) {
+    return new Promise((resolve, reject) => {
+        if (package.hasOwnProperty('username') &&
+            package.hasOwnProperty('email') &&
+            package.hasOwnProperty('username')) {
             support.log("debug", `p_user.js - update_user : updating_user ${package.username}`);
 
         }
     })
 };
-async function remove_user(package){
-    return new Promise((resolve,reject)=>{
-        if(package.hasOwnProperty('id')){
-                support.log("debug", `p_user.js - remove_user : Removing user ${package.id}`);
+async function remove_user(package) {
+    return new Promise((resolve, reject) => {
+        if (package.hasOwnProperty('id')) {
+            support.log("debug", `p_user.js - remove_user : Removing user ${package.id}`);
 
 
 
         }
     });
-}
+};
 
+async function get_users() {
+    return new Promise((resolve, reject) => {
+        support.log("debug", `p_user.js - get_users : Getting ALL USERS`);
+
+        const get_users_query = `SELECT * FROM ${config.db_rootDatabase}.user;`
+
+        db.promise_pool.query(get_users_query).then((rows) => {
+            support.log("debug", `p_user.js - get_users : Retrieved ALL USERS`);
+            const r_msg = {
+                "status": 1,
+                "Message": `Users Successfully Retrieved`,
+                "Results": rows[0]
+            };
+            // resolve returning the data package containing the details
+            resolve(r_msg);
+
+        }).catch((error) => {
+            // our query failed, log the incident
+            support.log("error", "p_user.js - get_users : Unable to get users db.promise_pool failed to service the query")
+            // reject our promise, promoting the application pools failure as needed.
+            reject(error);
+        })
+
+    });
+
+};
+
+async function get_all_userid() {
+    return new Promise((resolve, reject) => {
+        support.log("debug", "p_user.js - get_all_userid: Getting all UserID");
+
+        const get_userids_query = ` SELECT id FROM ${config.db_rootDatabase}.user;`
+
+        db.promise_pool.query(get_userids_query).then((rows) => {
+            support.log("debug", `p_user.js - get_all_userid : Retrieved ALL USERS ID's`);
+            const r_msg = {
+                "status": 1,
+                "Message": `User ids Successfully Retrieved`,
+                "Results": rows[0]
+            };
+            // resolve returning the data package containing the details
+            resolve(r_msg);
+        }).catch((error) => {
+            // our query failed, log the incident
+            support.log("error", "p_user.js - get_all_userid : Unable to get users db.promise_pool failed to service the query")
+            // reject our promise, promoting the application pools failure as needed.
+            reject(error);
+        })
+
+    });
+};
 
 
 // export required functions
 module.exports.create_user = create_user;
 module.exports.update_user = update_user;
 module.exports.remove_user = remove_user;
+module.exports.get_users = get_users;
+module.exports.get_all_userid = get_users;

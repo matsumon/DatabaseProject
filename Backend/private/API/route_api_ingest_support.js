@@ -194,7 +194,7 @@ async function evaluate_API_request(json_api_request, res) {
                 
                 });
                 break;
-            case "ADD_USR": // DONE
+            case "ADD_USR":     // DONE
                 logon.validate_session(json_api_request).then((r_msg) => { // session is valid
                     user.create_user(json_api_request.task_data).then((r_msg) => {
                         // send required response w/ resulting user creation msg
@@ -229,7 +229,41 @@ async function evaluate_API_request(json_api_request, res) {
                 
                 });
                 break;
+            case "GET_USRS" :   // DONE
+                logon.validate_session(json_api_request).then((r_msg) => { // session is valid
+                    user.get_users().then((r_msg) => {
+                        // send required response w/ resulting user creation msg
+                        res.status(200);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `${JSON.stringify(r_msg)}`;
+                        res.send(response);
 
+                    }).catch((error)=>{
+
+                        // return error for bad user creation
+                        support.log("Error", `route_api_ingest_support.js - Could not GET_USRS : Unknown Error : \n ${error}`)
+                        res.status(500);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `HTTP 500 - CREDENTIALS VALIDATED - COULD NOT GET_USRS : API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                        res.send(response);
+
+                    })
+    
+
+                }).catch((error) => {   // session is invalid or error occurred
+                    res.status(403);
+                    res.setHeader('Access-Control-Allow-Origin', '*');
+                    res.setHeader('Access-Control-Allow-Headers', '*');
+                    res.setHeader('Access-Control-Request-Method', '*');
+                    const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                    res.send(response);
+                
+                });
+                break;
             case "ADD_ROLE": // DONE
                 logon.validate_session(json_api_request).then((r_msg) => { // session is valid
                     role.new_role(json_api_request).then(r_msg => {

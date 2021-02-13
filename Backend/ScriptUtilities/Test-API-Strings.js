@@ -29,3 +29,22 @@ ADD_ROLE_REQ = {
         "role_title": "BOB"
     }
 }
+
+// Get_USERS
+GET_USERS_REQ = {
+    "username": "test_user00",
+    "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+    "operation_name": "GET_USRS",
+    "task_data": {}
+}
+
+// ADD_USR
+ADD_USERS_REQ = {
+    "username": "test_user00",
+    "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+    "operation_name": "ADD_USR",
+    "task_data": {
+        "username": "",
+        "email" : ""
+    }
+}
