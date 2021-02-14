@@ -10,7 +10,9 @@ import {
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import _ from "lodash";
+import moment from "moment";
 import "antd/dist/antd.css";
+const axios = require('axios');
 
 function User() {
   const { Column } = Table;
@@ -22,15 +24,42 @@ function User() {
   const [email, setEmail] = useState("");
   // State variable to trigger a re-render of component
   const [render, setRender] = useState(false);
+
   /**
    * This data is held in a state variable so that it wont reset every time the component
    * is re-rendered. This data represents the current state of data in sql
    */
+
   const [rawData, setRawData] = useState([
-    { id: 1, username: "Mike", created: "1/2/21", email: "blahblah@gmail.com" },
-    { id: 2, username: "Lucy", created: "21/2/31", email: "dsfadsa@gmail.com" },
-    { id: 3, username: "Will", created: "1/123/21", email: "asdfdf@gmail.com" },
+    // { id: 1, username: "Mike", created: "1/2/21", email: "blahblah@gmail.com" },
+    // { id: 2, username: "Lucy", created: "21/2/31", email: "dsfadsa@gmail.com" },
+    // { id: 3, username: "Will", created: "1/123/21", email: "asdfdf@gmail.com" },
   ]);
+let allUsersQuery = {
+  "username":"test_user00",
+  "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+  "operation_name":"GET_USRS"
+  // "task_data":{
+  //   "role_title":"ddddds13123sadasd1dd4534534dsfsdd23dfsd"
+  // }
+}
+ 
+if(rawData && rawData.length === 0){
+  axios(
+  {
+  method: 'post',
+  url: 'http://flip3.engr.oregonstate.edu:53200/API',
+  data: JSON.stringify(allUsersQuery)
+})
+.then(function (response) {
+  console.log("AXIOS RESPONSE",response.data.Results);
+  setRawData(response.data.Results);
+})
+.catch(function (error) {
+  console.log("AXIOS RESPONSE",error);
+});
+}
+
   /**
    * This function creates the data packet for antd's table. Because
    * the table is having issues we have to set deleted rows to null.
@@ -58,16 +87,55 @@ function User() {
       return;
     }
     let tempRawData = rawData;
-    tempRawData.push({
-      id: "",
+    let addUsersQuery = {
+      "username":"test_user00",
+      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+      "operation_name":"ADD_USR",
+      "task_data":{
+        "username":username,
+        "created":moment(created).format("YYYY-MM-DD HH:mm:ss"),
+        "email":email ? email : null
+      }
+    }
+      axios(
+      {
+      method: 'post',
+      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      data: JSON.stringify(addUsersQuery)
+    })
+    .then(function (response) {
+      console.log("AXIOS RESPONSE",response.data);
+    //  tempRawData = response.data.Results;
+     tempRawData.push({
+      id: response.data.insertId,
       username: username,
       created: created,
       email: email,
     });
+    console.log("tmepRawData",tempRawData)
+    setRawData(tempRawData);
     setUsername("");
     setEmail("");
-    setRawData(tempRawData);
     setRender(!render);
+    })
+    .catch(function (error) {
+      console.log("AXIOS RESPONSE",error);
+      message.error(
+        "User Already Exists"
+      );
+    });
+    // }
+    // tempRawData.push({
+    //   id: "",
+    //   username: username,
+    //   created: created,
+    //   email: email,
+    // });
+    // console.log("tmepRawData",tempRawData)
+    // setRawData(tempRawData);
+    // setUsername("");
+    // setEmail("");
+    // setRender(!render);
   }
   let dataToBeUsed = [];
   dataToBeUsed = createDataSource();
