@@ -219,9 +219,10 @@ function Action() {
     })
     .then(function (response) {
       console.log("AXIOS RESPONSE",response.data);
-      let tempRawData = rawData;
-      e= _.findIndex(tempRawData,(element)=>{return element.id === e})
-      copy.push(e);
+      // let tempRawData = rawData;
+      let indexDie= _.findIndex(rawData,(element)=>{return element.id === e})
+      copy.push(indexDie);
+      // setRawData(tempRawData);
     setDeleted(copy);
     setRender(!render);
     })
@@ -263,7 +264,7 @@ function Action() {
     })
     .then(function (response) {
       console.log("AXIOS RESPONSE",response.data);
-      tempRawData[e].action = action;
+      tempRawData[_.findIndex(rawData,(element)=>{return e === element.id})].action = action;
       setRawData(tempRawData);
       setAction("");
       setEdit(-1);
@@ -342,9 +343,9 @@ function Action() {
                   disabled={object.id === edit || edit !== -1}
                   type="primary"
                   onClick={() => {
+                    console.log(_.findIndex(rawData,(e)=>{return e.id == object.id}))
                     setEdit(object.id);
-
-                    setAction(rawData[object.id].action);
+                    setAction(rawData[_.findIndex(rawData,(e)=>{return e.id == object.id})].action);
                   }}
                 >
                   Edit Action
@@ -362,6 +363,7 @@ function Action() {
                   disabled={object.id === deleteEdit || deleteEdit !== -1}
                   danger
                   onClick={() => {
+                    
                     setDeleteEdit(object.id);
                   }}
                 >
