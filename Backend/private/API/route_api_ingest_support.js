@@ -735,7 +735,42 @@ async function evaluate_API_request(json_api_request, res) {
                 });
             
                 break;
+            case "FILTER_ACTIONS":
+                logon.validate_session(json_api_request).then((r_msg) => { // session is valid
+                    action.filter_return_actions(json_api_request).then(r_msg => {
+                        // send required response w/ resulting new ROLE ID
+                        res.status(200);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `${JSON.stringify(r_msg)}`;
+                        res.send(response);
+
+
+                    }).catch(error =>{
+                        // return error for bad session creation
+                        support.log("Error", `route_api_ingest_support.js - Could not filter_return_actions(: Unknown Error : \n ${error}`)
+                        res.status(500);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `HTTP 500 - CREDENTIALS VALIDATED - COULD NOT filter_return_actions: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                        res.send(response);
+
+                    })
+
+                }).catch((error) => {   // session is invalid or error occurred
+                    res.status(403);
+                    res.setHeader('Access-Control-Allow-Origin', '*');
+                    res.setHeader('Access-Control-Allow-Headers', '*');
+                    res.setHeader('Access-Control-Request-Method', '*');
+                    const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                    res.send(response);
+                
+                });
             
+                break;
+
             // Deal with BAD API requests
             default:
 

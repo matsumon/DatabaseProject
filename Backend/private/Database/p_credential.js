@@ -222,7 +222,7 @@ async function get_all_credential() {
     return new Promise((resolve, reject) => {
         support.log("debug", "p_credential.js - get_all_credential: retrieving credentials");
 
-        const get_all_credentials_query = `SELECT id, 'hash', exp_date AS expired, created_date AS created, enabled, user_id AS userID FROM ${config.db_rootDatabase}.credential`
+        const get_all_credentials_query = `SELECT id, hash, exp_date AS expired, created_date AS created, enabled, user_id AS userID FROM ${config.db_rootDatabase}.credential`
 
         db.promise_pool.query(get_all_credentials_query).then((rows) => {
 

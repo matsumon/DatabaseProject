@@ -95,8 +95,8 @@ ADD_CREDENTIALS_REQ = {
         "hash": "laksdjflksadjflkjasdlkfjlksdajflksda",
         "exp_date": "2021-02-12",
         "created_date": "2021-02-12",
-        "enabled" : "2021-02-12",
-        "userID" : ""
+        "enabled" : 1,
+        "userID" : 1
     }
 }
 
@@ -188,5 +188,16 @@ CREATE_ROLE2ACTION_REQ = {
     "task_data": {
         "actionID" : "",
         "roleID" : ""
+        }
+}
+
+// Create Role2Action Association
+FILTER_ACTIONS_REQ = {
+    "username": "test_user00",
+    "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+    "operation_name": "FILTER_ACTIONS",
+    "task_data": {
+        "action_name" : "",
+        "actionIDs" : ""
         }
 }

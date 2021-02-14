@@ -172,8 +172,83 @@ async function get_Actions(){
 
 }
 
+
+async function filter_return_actions(package){
+    return new Promise((resolve, reject) => {
+        if(package.task_data.hasOwnProperty("action_name")&&
+            package.task_data.hasOwnProperty("actionIDs")){
+                var where_string = "1=1"
+                var and_string = "1=1"
+
+                if(package.task_data.actionIDs!= ""){
+                    if(package.task_data.actionIDs.includes(", ")){
+                        console.log("actionIDs includes multiple")
+
+                        where_string = `action.id IN ("${package.task_data.actionIDs}")`
+                        where_string = where_string.replace(/, /g, `","`);
+                    }
+                    else if(package.task_data.actionIDs.includes(",")){
+                        console.log("actionIDs includes multiple")
+
+                        where_string = `action.id IN ("${package.task_data.actionIDs}")`
+                        where_string = where_string.replace(/,/g, `","`);
+                    }
+                    else{
+                        where_string = `action.id IN (${package.task_data.actionIDs})`
+                    }
+
+                    
+                }
+                if(package.task_data.action_name  != ""){
+                    and_string = `action.action_name = "${package.task_data.action_name }"`
+                }
+
+                const filter_query = `SELECT id, action_name
+                FROM ${config.db_rootDatabase}.action
+                WHERE ${where_string}
+                AND ${and_string}`
+
+                console.log("fullQUERY")
+                console.log(filter_query)
+
+
+                db.promise_pool.query(filter_query).then((rows) =>{
+                    support.log("debug", `p_action.js - filter_return_actions : filter_return_actions completed results = ${JSON.stringify(rows)}`);
+
+                    const r_msg = {
+                        "status": 1,
+                        "Message": `filter_return_actions completed`,
+                        "insertId": rows[0]
+                    };
+
+                    // resolve returning the data package containing the details
+                    resolve(r_msg);
+
+                }).catch((error) =>{
+                    // our query failed, log the incident
+                    support.log("error", "p_action.js - filter_return_actions: Unable to create filter_data db.promise_pool failed to service the query")
+                    support.log("error", `Error Message: - ${error}`)
+                    // reject our promise, promoting the application pools failure as needed.
+                    reject(error);
+                })
+
+           
+
+        }else{
+            support.log("error", "p_action.js - filter_return_actions : Aborted Execution due to unexpected or missing Key-Value pairs");
+            reject("Supplied Object does not contain the expected key-value pairs to complete operation, Operation aborted.");
+        }
+        
+    });
+
+}
+
+
+
+
 module.exports.add_Action = add_Action;
 module.exports.del_Action = del_Action;
 module.exports.update_Action = update_Action;
 module.exports.get_Action_ids = get_Action_ids;
 module.exports.get_Actions = get_Actions;
+module.exports.filter_return_actions = filter_return_actions;
