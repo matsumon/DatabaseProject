@@ -95,7 +95,8 @@ ADD_CREDENTIALS_REQ = {
         "hash": "laksdjflksadjflkjasdlkfjlksdajflksda",
         "exp_date": "2021-02-12",
         "created_date": "2021-02-12",
-        "enabled" : "2021-02-12"
+        "enabled" : "2021-02-12",
+        "userID" : ""
     }
 }
 
@@ -168,13 +169,24 @@ GET_ROLES_REQ = {
 }
 
 // Create User2Role Association
-
 CREATE_USR2ROLE_REQ = {
     "username": "test_user00",
     "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
     "operation_name": "CREATE_USR2ROLE",
     "task_data": {
         "userID" : "",
+        "roleID" : ""
+        }
+}
+
+
+// Create Role2Action Association
+CREATE_ROLE2ACTION_REQ = {
+    "username": "test_user00",
+    "token": "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+    "operation_name": "CREATE_ROLE2ACTION",
+    "task_data": {
+        "actionID" : "",
         "roleID" : ""
         }
 }

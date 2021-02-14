@@ -253,7 +253,8 @@ async function add_insecure_arbitrary_credential(package) {
     if (package.task_data.hasOwnProperty("hash")&&
     package.task_data.hasOwnProperty("exp_date")&&
     package.task_data.hasOwnProperty("created_date")&&
-    package.task_data.hasOwnProperty("enabled")) {
+    package.task_data.hasOwnProperty("enabled")&
+    package.task_data.hasOwnProperty("userID")) {
         // this will create a new credential, however you will still need to set the password after credential creation
         return new Promise((resolve, reject) => {
             support.log("debug", "p_credential.js - create_credential : Creating new Credential");
@@ -262,8 +263,9 @@ async function add_insecure_arbitrary_credential(package) {
         (hash,
         exp_date,
         created_date,
-        enabled)
-        VALUES('${package.task_data.hash}', ${package.task_data.exp_date}, ${package.task_data.created_date}, ${package.task_data.enabled});`
+        enabled,
+        user_id)
+        VALUES('${package.task_data.hash}', ${package.task_data.exp_date}, ${package.task_data.created_date}, ${package.task_data.enabled}, ${package.task_data.userID});`
             db.promise_pool.query(credential_creation_query).then((rows) => {
                 support.log("debug", `p_credential.js - create_credential : Credential Created - ID of new Object = ${rows[0].insertId}`);
 
