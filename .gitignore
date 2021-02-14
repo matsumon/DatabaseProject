@@ -10,3 +10,6 @@
 /App_Log/**
 
 **/.eslintcache
+
+# ignore .vscode
+**/.vscode
