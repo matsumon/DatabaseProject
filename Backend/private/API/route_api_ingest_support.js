@@ -735,7 +735,7 @@ async function evaluate_API_request(json_api_request, res) {
                 });
             
                 break;
-            case "FILTER_ACTIONS":
+            case "FILTER_ACTIONS":      // DONE
                 logon.validate_session(json_api_request).then((r_msg) => { // session is valid
                     action.filter_return_actions(json_api_request).then(r_msg => {
                         // send required response w/ resulting new ROLE ID
