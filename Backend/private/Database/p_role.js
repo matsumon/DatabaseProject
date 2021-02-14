@@ -76,7 +76,9 @@ async function get_roles(){
     return new Promise((resolve, reject)=>{
         support.log("debug", "p_role.js  - get_roleids Getting all Roles");
 
-        const get_userids_query = `SELECT * FROM ${config.db_rootDatabase}.role;`
+        const get_userids_query = `SELECT role.id as id, role.role_title as roleTitle, user.id as userID
+        FROM ${config.db_rootDatabase}.role JOIN user_to_role ON role.id = user_to_role.role_id
+            JOIN user ON user.id = user_to_role.user_id;`
 
         db.promise_pool.query(get_userids_query).then((rows) => {
             support.log("debug", `p_role.js - get_roles : Retrieved ALL ROLEs`);
