@@ -13,6 +13,8 @@ import { useHistory } from "react-router-dom";
 import _ from "lodash";
 import moment from "moment";
 import "antd/dist/antd.css";
+import {url} from "./url.js"
+
 const axios = require('axios');
 
 function Credential() {
@@ -70,7 +72,7 @@ function Credential() {
     axios(
     {
     method: 'post',
-    url: 'http://flip3.engr.oregonstate.edu:53200/API',
+    url: url,
     data: JSON.stringify(allCredentialsQuery)
   })
   .then(function (response) {
@@ -91,7 +93,7 @@ function Credential() {
       axios(
       {
       method: 'post',
-      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      url: url,
       data: JSON.stringify(allUserIdsQuery)
     })
     .then(function (response) {
@@ -129,7 +131,7 @@ function Credential() {
     axios(
       {
       method: 'post',
-      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      url: url,
       data: JSON.stringify(changeUserId)
     })
     .then(function (response) {
@@ -201,7 +203,7 @@ function Credential() {
     axios(
       {
       method: 'post',
-      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      url: url,
       data: JSON.stringify(addCredentialQuery)
     })
     .then(function (response) {

@@ -13,6 +13,8 @@ import { useHistory } from "react-router-dom";
 import _ from "lodash";
 import moment from "moment";
 import "antd/dist/antd.css";
+import {url} from "./url.js"
+
 const axios = require('axios');
 
 function Session() {
@@ -48,7 +50,7 @@ function Session() {
       axios(
       {
       method: 'post',
-      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      url: url,
       data: JSON.stringify(allUserIdsQuery)
     })
     .then(function (response) {
@@ -101,7 +103,7 @@ function Session() {
     axios(
     {
     method: 'post',
-    url: 'http://flip3.engr.oregonstate.edu:53200/API',
+    url: url,
     data: JSON.stringify(allSessionsQuery)
   })
   .then(function (response) {
@@ -165,7 +167,7 @@ function Session() {
     axios(
       {
       method: 'post',
-      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      url: url,
       data: JSON.stringify(addSessionQuery)
     })
     .then(function (response) {

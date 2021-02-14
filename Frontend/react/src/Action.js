@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import _ from "lodash";
 import "antd/dist/antd.css";
+import {url} from "./url.js"
 const axios = require('axios');
 
 function Action() {
@@ -33,6 +34,7 @@ function Action() {
   const [results, setResults] = useState(false);
   // State variable to trigger a re-render of component
   const [render, setRender] = useState(false);
+  const [firstTime, setFirstTime] = useState(true);
   // The delete variable tells which component is allowed to delete its contents
   const [deleteEdit, setDeleteEdit] = useState(-1);
   /**
@@ -54,14 +56,18 @@ function Action() {
     // }
   }
    
-  if(rawData && rawData.length === 0){
+  // if(rawData && rawData.length === 0){
+  if(firstTime){
+    console.log("FirstTime")
+    setFirstTime(false);
     axios(
     {
     method: 'post',
-    url: 'http://flip3.engr.oregonstate.edu:53200/API',
+    url: url,
     data: JSON.stringify(allActionsQuery)
   })
   .then(function (response) {
+    console.log("AXIOS HEREREREERERERER");
     console.log("AXIOS RESPONSE",response.data.Results);
     setRawData(response.data.Results);
   })
@@ -92,6 +98,29 @@ function Action() {
   // }
   function handleSelectChange(value, id) {
     console.log(value, id);
+    let roleToActionQuery = {
+      "username":"test_user00",
+      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+      "operation_name":"UPDATE_ROLE_ASCC",
+      "task_data":{
+        "ActionID": id,
+        "New_Roles": value
+      }
+    }
+     
+      axios(
+      {
+      method: 'post',
+      url: url,
+      data: JSON.stringify(roleToActionQuery)
+    })
+    .then(function (response) {
+      console.log("AXIOS RESPONSE",response);
+    })
+    .catch(function (error) {
+      console.log("AXIOS RESPONSE",error);
+      message.error("Could not remove M:M relationship ");
+    });
   }
   function handleSelectRoleChange(value) {
     console.log(value);
@@ -114,7 +143,7 @@ function Action() {
       axios(
       {
       method: 'post',
-      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      url: url,
       data: JSON.stringify(allRoleIdsQuery)
     })
     .then(function (response) {
@@ -143,7 +172,7 @@ function Action() {
       axios(
       {
       method: 'post',
-      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      url: url,
       data: JSON.stringify(allActionIdsQuery)
     })
     .then(function (response) {
@@ -185,14 +214,15 @@ function Action() {
       axios(
       {
       method: 'post',
-      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      url: url,
       data: JSON.stringify(deleteQuery)
     })
     .then(function (response) {
       console.log("AXIOS RESPONSE",response.data);
-      let tempRawData = rawData;
-      e= _.findIndex(tempRawData,(element)=>{return element.id === e})
-      copy.push(e);
+      // let tempRawData = rawData;
+      let indexDie= _.findIndex(rawData,(element)=>{return element.id === e})
+      copy.push(indexDie);
+      // setRawData(tempRawData);
     setDeleted(copy);
     setRender(!render);
     })
@@ -229,12 +259,12 @@ function Action() {
       axios(
       {
       method: 'post',
-      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      url: url,
       data: JSON.stringify(updateQuery)
     })
     .then(function (response) {
       console.log("AXIOS RESPONSE",response.data);
-      tempRawData[e].action = action;
+      tempRawData[_.findIndex(rawData,(element)=>{return e === element.id})].action = action;
       setRawData(tempRawData);
       setAction("");
       setEdit(-1);
@@ -313,9 +343,9 @@ function Action() {
                   disabled={object.id === edit || edit !== -1}
                   type="primary"
                   onClick={() => {
+                    console.log(_.findIndex(rawData,(e)=>{return e.id == object.id}))
                     setEdit(object.id);
-
-                    setAction(rawData[object.id].action);
+                    setAction(rawData[_.findIndex(rawData,(e)=>{return e.id == object.id})].action);
                   }}
                 >
                   Edit Action
@@ -333,6 +363,7 @@ function Action() {
                   disabled={object.id === deleteEdit || deleteEdit !== -1}
                   danger
                   onClick={() => {
+                    
                     setDeleteEdit(object.id);
                   }}
                 >
@@ -357,6 +388,8 @@ function Action() {
       message.error("Action was not filled out");
       return;
     }
+    let bool =0;
+    let objectID=null;
     let tempRawData = rawData;
     let addActionQuery = {
       "username":"test_user00",
@@ -370,13 +403,14 @@ function Action() {
     axios(
       {
       method: 'post',
-      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      url: url,
       data: JSON.stringify(addActionQuery)
     })
     .then(function (response) {
       console.log("AXIOS RESPONSE",response.data,roleID);
     //  tempRawData = response.data.Results;
     //
+    objectID = response.data.insertId;
     let actionRelationQuery = {
       "username":"test_user00",
       "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
@@ -387,16 +421,17 @@ function Action() {
       }
     }
      
-    if(response?.data?.insertId && roleID){
+    if(response?.data?.insertId && roleID.length>0){
       axios(
       {
       method: 'post',
-      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      url: url,
       data: JSON.stringify(actionRelationQuery)
     })
     .then(function (response) {
       console.log("AXIOS RESPONSE",response);
-      tempRawData.push({ id: response.data.insertId, action: addAction, mmRoleID: [roleID] });
+      bool = 1
+      tempRawData.push({ id: response.data.insertId, action: addAction, mmRoleID: roleID ? [roleID]: roleID });
       setRawData(tempRawData);
       setAddAction("");
       setRoleID();
@@ -417,6 +452,14 @@ function Action() {
       console.log("AXIOS RESPONSE",error);
       message.error("Action already exists");
     });
+    // if(bool ===0 && objectID){
+      console.log("ROLE",roleID)
+      tempRawData.push({ id: objectID, action: addAction, mmRoleID: roleID ? [roleID]: roleID });
+      setRawData(tempRawData);
+      setAddAction("");
+      setRoleID();
+      setRender(!render);
+    // }
     // tempRawData.push({ id: "", action: addAction, mmRoleID: roleID });
     // setRawData(tempRawData);
     // setAddAction("");
@@ -540,7 +583,7 @@ function Action() {
                 axios(
                 {
                 method: 'post',
-                url: 'http://flip3.engr.oregonstate.edu:53200/API',
+                url: url,
                 data: JSON.stringify(filterQuery)
               })
               .then(function (response) {

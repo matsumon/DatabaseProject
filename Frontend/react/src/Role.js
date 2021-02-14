@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import _ from "lodash";
 import "antd/dist/antd.css";
+import {url} from "./url.js"
+
 const axios = require('axios');
 
 function Role() {
@@ -40,7 +42,7 @@ function Role() {
     axios(
     {
     method: 'post',
-    url: 'http://flip3.engr.oregonstate.edu:53200/API',
+    url: url,
     data: JSON.stringify(allRolesQuery)
   })
   .then(function (response) {
@@ -61,7 +63,7 @@ function Role() {
       axios(
       {
       method: 'post',
-      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      url: url,
       data: JSON.stringify(allUserIdsQuery)
     })
     .then(function (response) {
@@ -125,7 +127,7 @@ function Role() {
     axios(
       {
       method: 'post',
-      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      url: url,
       data: JSON.stringify(addRoleQuery)
     })
     .then(function (response) {
@@ -144,7 +146,7 @@ function Role() {
       axios(
         {
         method: 'post',
-        url: 'http://flip3.engr.oregonstate.edu:53200/API',
+        url: url,
         data: JSON.stringify(addRelationQuery)
       })
       .then(function (response) {
