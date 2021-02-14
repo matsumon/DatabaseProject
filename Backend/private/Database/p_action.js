@@ -156,8 +156,8 @@ async function get_Actions() {
         support.log("debug", "p_action.js - get_action Getting all actions");
 
         const get_actions_query = `SELECT action.id, action.action_name as action, role.id AS mmRoleID
-        FROM ${config.db_rootDatabase}.action JOIN role_to_action ON action.id = role_to_action.action_id
-            JOIN role ON role.id = role_to_action.role_id;`
+        FROM ${config.db_rootDatabase}.action LEFT JOIN role_to_action ON action.id = role_to_action.action_id
+            LEFT JOIN role ON role.id = role_to_action.role_id;`
 
         db.promise_pool.query(get_actions_query).then((rows) => {
 
