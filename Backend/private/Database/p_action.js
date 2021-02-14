@@ -4,6 +4,7 @@ const support = require('../support.js');
 const db = require('./database_access.js');
 
 
+
 async function add_Action(package) {
     // this will create a new action
     return new Promise((resolve, reject) => {
@@ -149,12 +150,14 @@ async function get_Actions(){
     return new Promise((resolve, reject)=>{
         support.log("debug", "p_action.js - get_action Getting all actions");
 
-        const get_userids_query = `SELECT action.id, action.action_name, role.id AS roleID 
+        const get_actions_query = `SELECT action.id, action.action_name, role.id AS roleID 
         FROM ${config.db_rootDatabase}.action JOIN role_to_action ON action.id = role_to_action.action_id
             JOIN role ON role.id = role_to_action.role_id;`
 
-        db.promise_pool.query(get_userids_query).then((rows) => {
+        db.promise_pool.query(get_actions_query).then((rows) => {
             support.log("debug", `p_action.js- get_actions : Retrieved ALL actions`);
+
+
             const r_msg = {
                 "status": 1,
                 "Message": `Actions Successfully Retrieved`,

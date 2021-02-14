@@ -41,3 +41,5 @@ async function create_association(package){
 
     })
 }
+
+module.exports.create_association = create_association;
