@@ -2,6 +2,7 @@
 const config = require('../../init_config.json');
 const support = require('../support.js');
 const db = require('./database_access.js');
+const _ = require('lodash');
 
 
 
@@ -50,7 +51,10 @@ async function del_Action(package) {
             support.log("debug", `p_action.js - del_Action : Deleting action id ${package.task_data.id}"`);
             // first build a query that will create a new action object and return the PK field 'id' from its creation
 
-            const action_creation_query = `DELETE FROM ${config.db_rootDatabase}.action WHERE id = ${package.task_data.id};`
+            const action_creation_query = `DELETE FROM ${config.db_rootDatabase}.role_to_action
+            where(role_to_action.action_id = ${package.task_data.id});
+            DELETE FROM ${config.db_rootDatabase}.action
+            WHERE(action.id = ${package.task_data.id});`
 
 
             db.promise_pool.query(action_creation_query).then((rows) => {
@@ -68,6 +72,7 @@ async function del_Action(package) {
             }).catch((error) => {
                 // our query failed, log the incident
                 support.log("error", "p_action.js - del_Action : Unable to delete action db.promise_pool failed to service the query")
+                support.log("error", `p_action.js - del_Action : FULL ERROR \n ${error}`)
                 // reject our promise, promoting the application pools failure as needed.
                 reject(error);
             })
@@ -150,24 +155,50 @@ async function get_Actions() {
     return new Promise((resolve, reject) => {
         support.log("debug", "p_action.js - get_action Getting all actions");
 
-        const get_actions_query = `SELECT action.id, action.action_name, role.id AS roleID 
+        const get_actions_query = `SELECT action.id, action.action_name as action, role.id AS mmRoleID
         FROM ${config.db_rootDatabase}.action JOIN role_to_action ON action.id = role_to_action.action_id
             JOIN role ON role.id = role_to_action.role_id;`
 
         db.promise_pool.query(get_actions_query).then((rows) => {
+
+            support.log("debug", `FUll QUERY RESULTS : ${JSON.stringify(rows)}`)
+
             support.log("debug", `p_action.js- get_actions : Retrieved ALL actions`);
 
+            let data = rows[0]
+            
+            let unique = _.uniqWith(data, (arrVal, othVal) => {
+                return arrVal.id === othVal.id
+            })
+            let resultArray = _.map(unique, (element) => {
+                return ({
+                    id: element.id,
+                    action: element.action,
+                    mmRoleID: []
+                })
+            });
+            _.forEach(data, (object) => {
+                let resultArrayIndex = _.findIndex(resultArray, (element) => {
+                    return element.id === object.id
+                })
+                if (resultArrayIndex === -1) {
+                    throw console.error("uniqueWith did not work correctly");
+                }
+                resultArray[resultArrayIndex].mmRoleID.push(object.mmRoleID)
+            })
+            support.log("debug", `Resulting merged objects array - ${JSON.stringify(resultArray)}`)
 
             const r_msg = {
                 "status": 1,
                 "Message": `Actions Successfully Retrieved`,
-                "Results": rows[0]
+                "Results": resultArray
             };
             // resolve returning the data package containing the details
             resolve(r_msg);
         }).catch((error) => {
             // our query failed, log the incident
             support.log("error", "p_action.js- get_actions : Unable to get action ids db.promise_pool failed to service the query")
+            support.log("error", `${error}`)
             // reject our promise, promoting the application pools failure as needed.
             reject(error);
         })
@@ -206,34 +237,12 @@ async function filter_return_actions(package) {
                 AND ${and_string}`
 
             db.promise_pool.query(filter_query).then((rows) => {
-                support.log("debug", `p_action.js - filter_return_actions : filter_return_actions completed results = ${JSON.stringify(rows)}`);
-
-                let unique = _.uniqWith(rows[0], (arrVal, othVal) => {
-                    return arrVal.id === othVal.id
-                })
-
-                let resultArray = _.map(unique, (element) => {
-                    return ({
-                        id: element.id,
-                        action_title: element.action_title,
-                        userID: []
-                    })
-                });
-
-                _.forEach(rows[0], (object) => {
-                    let resultArrayIndex = _.findIndex(resultArray, (element) => {
-                        return element.id === object.id
-                    })
-                    if (resultArrayIndex === -1) {
-                        throw console.error("uniqueWith did not work correctly");
-                    }
-                    resultArray[resultArrayIndex].userID.push(object.userID)
-                })
+                support.log("debug", `p_action.js - filter_return_actions : filter_return_actions completed results = ${JSON.stringify(rows[0])}`);
 
                 const r_msg = {
                     "status": 1,
                     "Message": `filter_return_actions completed`,
-                    "results": resultArray
+                    "results": rows[0]
                 };
 
                 // resolve returning the data package containing the details

@@ -9,7 +9,8 @@ const pool_config = {
     "host": config.db_host,
     "user": config.db_serviceUser,
     "password": config.db_password,
-    "database": config.db_rootDatabase
+    "database": config.db_rootDatabase,
+    "multipleStatements": true
 }
 
 support.log("debug", "database_access.js - Establishing Connection to Database with configured arguments");
