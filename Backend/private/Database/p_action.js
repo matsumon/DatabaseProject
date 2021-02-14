@@ -8,13 +8,13 @@ const db = require('./database_access.js');
 async function add_Action(package) {
     // this will create a new action
     return new Promise((resolve, reject) => {
-        if(package.task_data.hasOwnProperty("action_name")){
+        if (package.task_data.hasOwnProperty("action_name")) {
             support.log("debug", "p_action.js - add_Action : Creating new action");
             // first build a query that will create a new action object and return the PK field 'id' from its creation
 
             const action_creation_query = `INSERT into ${config.db_rootDatabase}.action (action_name) VALUES('${package.task_data.action_name}');`
-            
-            
+
+
             db.promise_pool.query(action_creation_query).then((rows) => {
                 support.log("debug", `p_action.js - create_action : action Created - ID of new Object = ${rows[0].insertId}`);
 
@@ -35,24 +35,24 @@ async function add_Action(package) {
                 reject(error);
             })
 
-        }else{
+        } else {
             support.log("error", "p_action.js - add_Action : Aborted Execution due to unexpected or missing Key-Value pairs");
             reject("Supplied Object does not contain the expected key-value pairs to complete operation, Operation aborted.");
         }
-        
+
     });
 }
 
-async function del_Action(package){
+async function del_Action(package) {
     // this will delete action
     return new Promise((resolve, reject) => {
-        if(package.task_data.hasOwnProperty("id")){
+        if (package.task_data.hasOwnProperty("id")) {
             support.log("debug", `p_action.js - del_Action : Deleting action id ${package.task_data.id}"`);
             // first build a query that will create a new action object and return the PK field 'id' from its creation
 
             const action_creation_query = `DELETE FROM ${config.db_rootDatabase}.action WHERE id = ${package.task_data.id};`
-            
-            
+
+
             db.promise_pool.query(action_creation_query).then((rows) => {
                 support.log("debug", `p_action.js - del_action : action delete action id ${package.task_data.id}`);
 
@@ -72,28 +72,28 @@ async function del_Action(package){
                 reject(error);
             })
 
-        }else{
+        } else {
             support.log("error", "p_action.js - del_Action : Aborted Execution due to unexpected or missing Key-Value pairs");
             reject("Supplied Object does not contain the expected key-value pairs to complete operation, Operation aborted.");
         }
-        
+
     });
-    
+
 }
 
 async function update_Action(package) {
     // this will create a new action
     return new Promise((resolve, reject) => {
         support.log("debug", `p_action.js - update_Action : package content - ${JSON.stringify(package)}`)
-        if(package.task_data.hasOwnProperty("id")&&
-            package.task_data.hasOwnProperty("task_name")){
+        if (package.task_data.hasOwnProperty("id") &&
+            package.task_data.hasOwnProperty("task_name")) {
 
             support.log("debug", `p_action.js - update_Action : updating action id - ${package.task_data.task_name}`);
             // first build a query that will create a new action object and return the PK field 'id' from its creation
 
             const action_update_query = `UPDATE ${config.db_rootDatabase}.action SET action_name = "${package.task_data.task_name}" WHERE id = "${package.task_data.id}";`;
-            
-            
+
+
             db.promise_pool.query(action_update_query).then((rows) => {
                 support.log("debug", `p_action.js - update_action : action Updated`);
 
@@ -114,16 +114,16 @@ async function update_Action(package) {
                 reject(error);
             })
 
-        }else{
+        } else {
             support.log("error", "p_action.js - update_Action : Aborted Execution due to unexpected or missing Key-Value pairs");
             reject("Supplied Object does not contain the expected key-value pairs to complete operation, Operation aborted.");
         }
-        
+
     });
 }
 
-async function get_Action_ids(){
-    return new Promise((resolve, reject)=>{
+async function get_Action_ids() {
+    return new Promise((resolve, reject) => {
         support.log("debug", "p_action.js - get_action_ids Getting all action IDS");
 
         const get_userids_query = `SELECT id FROM ${config.db_rootDatabase}.action;`
@@ -146,8 +146,8 @@ async function get_Action_ids(){
     });
 }
 
-async function get_Actions(){
-    return new Promise((resolve, reject)=>{
+async function get_Actions() {
+    return new Promise((resolve, reject) => {
         support.log("debug", "p_action.js - get_action Getting all actions");
 
         const get_actions_query = `SELECT action.id, action.action_name, role.id AS roleID 
@@ -176,64 +176,84 @@ async function get_Actions(){
 }
 
 
-async function filter_return_actions(package){
+async function filter_return_actions(package) {
     return new Promise((resolve, reject) => {
-        if(package.task_data.hasOwnProperty("action_name")&&
-            package.task_data.hasOwnProperty("actionIDs")){
-                var where_string = "1=1"
-                var and_string = "1=1"
+        if (package.task_data.hasOwnProperty("action_name") &&
+            package.task_data.hasOwnProperty("actionIDs")) {
+            var where_string = "1=1"
+            var and_string = "1=1"
 
-                if(package.task_data.actionIDs!= ""){
-                    if(package.task_data.actionIDs.includes(", ")){
-                        where_string = `action.id IN ("${package.task_data.actionIDs}")`
-                        where_string = where_string.replace(/, /g, `","`);
-                    }
-                    else if(package.task_data.actionIDs.includes(",")){
-                        where_string = `action.id IN ("${package.task_data.actionIDs}")`
-                        where_string = where_string.replace(/,/g, `","`);
-                    }
-                    else{
-                        where_string = `action.id IN (${package.task_data.actionIDs})`
-                    }
-
-                    
-                }
-                if(package.task_data.action_name  != ""){
-                    and_string = `action.action_name = "${package.task_data.action_name }"`
+            if (package.task_data.actionIDs != "") {
+                if (package.task_data.actionIDs.includes(", ")) {
+                    where_string = `action.id IN ("${package.task_data.actionIDs}")`
+                    where_string = where_string.replace(/, /g, `","`);
+                } else if (package.task_data.actionIDs.includes(",")) {
+                    where_string = `action.id IN ("${package.task_data.actionIDs}")`
+                    where_string = where_string.replace(/,/g, `","`);
+                } else {
+                    where_string = `action.id IN (${package.task_data.actionIDs})`
                 }
 
-                const filter_query = `SELECT id, action_name
+
+            }
+            if (package.task_data.action_name != "") {
+                and_string = `action.action_name = "${package.task_data.action_name }"`
+            }
+
+            const filter_query = `SELECT id, action_name
                 FROM ${config.db_rootDatabase}.action
                 WHERE ${where_string}
                 AND ${and_string}`
 
-                db.promise_pool.query(filter_query).then((rows) =>{
-                    support.log("debug", `p_action.js - filter_return_actions : filter_return_actions completed results = ${JSON.stringify(rows)}`);
+            db.promise_pool.query(filter_query).then((rows) => {
+                support.log("debug", `p_action.js - filter_return_actions : filter_return_actions completed results = ${JSON.stringify(rows)}`);
 
-                    const r_msg = {
-                        "status": 1,
-                        "Message": `filter_return_actions completed`,
-                        "insertId": rows[0]
-                    };
-
-                    // resolve returning the data package containing the details
-                    resolve(r_msg);
-
-                }).catch((error) =>{
-                    // our query failed, log the incident
-                    support.log("error", "p_action.js - filter_return_actions: Unable to create filter_data db.promise_pool failed to service the query")
-                    support.log("error", `Error Message: - ${error}`)
-                    // reject our promise, promoting the application pools failure as needed.
-                    reject(error);
+                let unique = _.uniqWith(rows[0], (arrVal, othVal) => {
+                    return arrVal.id === othVal.id
                 })
 
-           
+                let resultArray = _.map(unique, (element) => {
+                    return ({
+                        id: element.id,
+                        action_title: element.action_title,
+                        userID: []
+                    })
+                });
 
-        }else{
+                _.forEach(rows[0], (object) => {
+                    let resultArrayIndex = _.findIndex(resultArray, (element) => {
+                        return element.id === object.id
+                    })
+                    if (resultArrayIndex === -1) {
+                        throw console.error("uniqueWith did not work correctly");
+                    }
+                    resultArray[resultArrayIndex].userID.push(object.userID)
+                })
+
+                const r_msg = {
+                    "status": 1,
+                    "Message": `filter_return_actions completed`,
+                    "results": resultArray
+                };
+
+                // resolve returning the data package containing the details
+                resolve(r_msg);
+
+            }).catch((error) => {
+                // our query failed, log the incident
+                support.log("error", "p_action.js - filter_return_actions: Unable to create filter_data db.promise_pool failed to service the query")
+                support.log("error", `Error Message: - ${error}`)
+                // reject our promise, promoting the application pools failure as needed.
+                reject(error);
+            })
+
+
+
+        } else {
             support.log("error", "p_action.js - filter_return_actions : Aborted Execution due to unexpected or missing Key-Value pairs");
             reject("Supplied Object does not contain the expected key-value pairs to complete operation, Operation aborted.");
         }
-        
+
     });
 
 }
