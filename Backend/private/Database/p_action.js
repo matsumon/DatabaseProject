@@ -182,14 +182,10 @@ async function filter_return_actions(package){
 
                 if(package.task_data.actionIDs!= ""){
                     if(package.task_data.actionIDs.includes(", ")){
-                        console.log("actionIDs includes multiple")
-
                         where_string = `action.id IN ("${package.task_data.actionIDs}")`
                         where_string = where_string.replace(/, /g, `","`);
                     }
                     else if(package.task_data.actionIDs.includes(",")){
-                        console.log("actionIDs includes multiple")
-
                         where_string = `action.id IN ("${package.task_data.actionIDs}")`
                         where_string = where_string.replace(/,/g, `","`);
                     }
@@ -207,10 +203,6 @@ async function filter_return_actions(package){
                 FROM ${config.db_rootDatabase}.action
                 WHERE ${where_string}
                 AND ${and_string}`
-
-                console.log("fullQUERY")
-                console.log(filter_query)
-
 
                 db.promise_pool.query(filter_query).then((rows) =>{
                     support.log("debug", `p_action.js - filter_return_actions : filter_return_actions completed results = ${JSON.stringify(rows)}`);
