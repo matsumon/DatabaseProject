@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import _ from "lodash";
 import "antd/dist/antd.css";
+const axios = require('axios');
+
 function Role() {
   const { Column } = Table;
   const { Option } = Select;
@@ -11,6 +13,7 @@ function Role() {
   const history = useHistory();
   const [roleTitle, setRoleTitle] = useState("");
   const [roleUserID, setRoleUserID] = useState("");
+  const [userOptions, setUserOptions] = useState([]);
   // State variable to trigger a re-render of component
   const [render, setRender] = useState(false);
 
@@ -19,17 +22,65 @@ function Role() {
    * is re-rendered. This data represents the current state of data in sql
    */
   const [rawData, setRawData] = useState([
-    { id: 1, roleTitle: "Pilot", userID: "1, 2, 3" },
-    { id: 2, roleTitle: "Capitain", userID: "1, 2, 3" },
-    { id: 3, roleTitle: "Officer",userID: "1, 2, 3" },
+    // { id: 1, roleTitle: "Pilot", userID: "1, 2, 3" },
+    // { id: 2, roleTitle: "Capitain", userID: "1, 2, 3" },
+    // { id: 3, roleTitle: "Officer",userID: "1, 2, 3" },
   ]);
-  const userOptions = _.map(
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    (element, index) => {
-      return <Option key={index} value={element} label={element} />;
+
+  let allRolesQuery = {
+    "username":"test_user00",
+    "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+    "operation_name":"GET_ROLES"
+    // "task_data":{
+    //   "role_title":"ddddds13123sadasd1dd4534534dsfsdd23dfsd"
+    // }
+  }
+   
+  if(rawData && rawData.length === 0){
+    axios(
+    {
+    method: 'post',
+    url: 'http://flip3.engr.oregonstate.edu:53200/API',
+    data: JSON.stringify(allRolesQuery)
+  })
+  .then(function (response) {
+    console.log("AXIOS RESPONSE",response.data.Results);
+    setRawData(response.data.Results);
+  })
+  .catch(function (error) {
+    console.log("AXIOS RESPONSE",error);
+  });
+  }
+  if(userOptions && userOptions.length == 0){
+    let allUserIdsQuery = {
+      "username":"test_user00",
+      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+      "operation_name":"GET_USRIDS",
     }
-  );
-  userOptions.push(<Option key={userOptions.length} value={"None"} label={"None"} />)
+     let axiosResponse = null;
+      axios(
+      {
+      method: 'post',
+      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      data: JSON.stringify(allUserIdsQuery)
+    })
+    .then(function (response) {
+      console.log("AXIOS RESPONSE",response);
+      axiosResponse=response.data.Results;
+       let tempUserIds = _.map(
+        axiosResponse,
+        (element, index) => {
+          return <Option key={index} value={element.id} label={element.id} />
+        }
+      );
+      tempUserIds.push(<Option key={tempUserIds.length} value={"None"} label={"None"} />)
+
+      setUserOptions(tempUserIds);
+    })
+    .catch(function (error) {
+      console.log("AXIOS RESPONSE",error);
+    });
+  }
   function handleSelectUserChange(value) {
     console.log(value);
     setRoleUserID(value);
@@ -60,11 +111,69 @@ function Role() {
       return;
     }
     let tempRawData = rawData;
-    tempRawData.push({ id: "", roleTitle: roleTitle, userID: roleUserID });
+    let newUserIDRelation = null;
+    let addRoleQuery = {
+      "username":"test_user00",
+      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+      "operation_name":"ADD_ROLE",
+      "task_data":{
+        "role_title": roleTitle,
+        // "roleUserID": (roleUserID ==="" || roleUserID ==="None") ? null : roleUserID
+      }
+    }
+    console.log("HERE")
+    axios(
+      {
+      method: 'post',
+      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      data: JSON.stringify(addRoleQuery)
+    })
+    .then(function (response) {
+      console.log("AXIOS RESPONSE",response.data.id);
+    //  tempRawData = response.data.Results;
+      let addRelationQuery = {
+        "username":"test_user00",
+        "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+        "operation_name":"CREATE_USR2ROLE",
+        "task_data":{
+          "roleID": response.data.id,
+          "userID": (roleUserID ==="" || roleUserID ==="None") ? null : roleUserID
+        }
+      }
+      console.log("HERE")
+      axios(
+        {
+        method: 'post',
+        url: 'http://flip3.engr.oregonstate.edu:53200/API',
+        data: JSON.stringify(addRelationQuery)
+      })
+      .then(function (response) {
+        console.log("AXIOS RESPONSE",response.data);
+        setRoleUserID(response.data.id)
+      //  tempRawData = response.data.Results;
+      // tempRawData.push({ id: response.data.id, roleTitle: roleTitle, userID: roleUserID });
+  //     setRoleTitle("");
+  //  setRawData(tempRawData);
+  //     setRender(!render);
+      })
+      .catch(function (error) { 
+        console.log("AXIOS RESPONSE",error);
+        message.error("Role Relation to User already exists");
+      });
+    tempRawData.push({ id: response.data.id, roleTitle: roleTitle, userID: roleUserID });
     setRoleTitle("");
-    // setRoleUserID("");
-    setRawData(tempRawData);
+ setRawData(tempRawData);
     setRender(!render);
+    })
+    .catch(function (error) {
+      console.log("AXIOS RESPONSE",error);
+      message.error("Role already exists");
+    });
+    // tempRawData.push({ id: "", roleTitle: roleTitle, userID: roleUserID });
+    // setRoleTitle("");
+    // setRoleUserID("");
+    // setRawData(tempRawData);
+    // setRender(!render);
   }
   let dataToBeUsed = [];
   dataToBeUsed = createDataSource();

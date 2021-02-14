@@ -11,7 +11,9 @@ import {
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import _ from "lodash";
+import moment from "moment";
 import "antd/dist/antd.css";
+const axios = require('axios');
 
 function Session() {
   const { Column } = Table;
@@ -24,6 +26,7 @@ function Session() {
   const [expired, setExpired] = useState("");
   const [requested, setRequested] = useState("");
   const [created, setCreated] = useState("");
+  const [userOptions, setUserOptions] = useState([]);
   // State variable to trigger a re-render of component
   const [render, setRender] = useState(false);
   function handleSelectUserChange(value) {
@@ -34,39 +37,81 @@ function Session() {
    * This data is held in a state variable so that it wont reset every time the component
    * is re-rendered. This data represents the current state of data in sql
    */
-  const userOptions = _.map(
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    (element, index) => {
-      return <Option key={index} value={element} label={element} />;
+  // let userOptions=[];
+  if(userOptions && userOptions.length == 0){
+    let allUserIdsQuery = {
+      "username":"test_user00",
+      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+      "operation_name":"GET_USRIDS",
     }
-  );
+     let axiosResponse = null;
+      axios(
+      {
+      method: 'post',
+      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      data: JSON.stringify(allUserIdsQuery)
+    })
+    .then(function (response) {
+      axiosResponse=response.data.Results;
+       let tempUserIds = _.map(
+        axiosResponse,
+        (element, index) => {
+          return <Option key={index} value={element.id} label={element.id} />
+        }
+      );
+      setUserOptions(tempUserIds);
+    })
+    .catch(function (error) {
+      console.log("AXIOS RESPONSE",error);
+    });
+  }
   const [rawData, setRawData] = useState([
-    {
-      id: 1,
-      userID: 3,
-      token: "112312312dsf",
-      expired: "1/2/21",
-      requested: "1/1/22",
-      created: "2/2/12",
-    },
-    {
-      id: 2,
-      userID: 2,
-      token: "asdfdas312dsf",
-      expired: "3/4/21",
-      requested: "1/2/22",
-      created: "9/2/12",
-    },
-    {
-      id: 3,
-      userID: 6,
-      token: "asdfsdaf32",
-      expired: "1/29/21",
-      requested: "1/12/22",
-      created: "21/2/12",
-    },
+    // {
+    //   id: 1,
+    //   userID: 3,
+    //   token: "112312312dsf",
+    //   expired: "1/2/21",
+    //   requested: "1/1/22",
+    //   created: "2/2/12",
+    // },
+    // {
+    //   id: 2,
+    //   userID: 2,
+    //   token: "asdfdas312dsf",
+    //   expired: "3/4/21",
+    //   requested: "1/2/22",
+    //   created: "9/2/12",
+    // },
+    // {
+    //   id: 3,
+    //   userID: 6,
+    //   token: "asdfsdaf32",
+    //   expired: "1/29/21",
+    //   requested: "1/12/22",
+    //   created: "21/2/12",
+    // },
   ]);
-
+  let allSessionsQuery = {
+    "username":"test_user00",
+    "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+    "operation_name":"GET_SESSIONS",
+  }
+   
+  if(rawData && rawData.length === 0){
+    axios(
+    {
+    method: 'post',
+    url: 'http://flip3.engr.oregonstate.edu:53200/API',
+    data: JSON.stringify(allSessionsQuery)
+  })
+  .then(function (response) {
+    console.log("AXIOS RESPONSE",response);
+    setRawData(response.data.Results);
+  })
+  .catch(function (error) {
+    console.log("AXIOS RESPONSE",error);
+  });
+  }
   /**
    * This function creates the data packet for antd's table. Because
    * the table is having issues we have to set deleted rows to null.
@@ -104,8 +149,30 @@ function Session() {
       return;
     }
     let tempRawData = rawData;
+    let addSessionQuery = {
+      "username":"test_user00",
+      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+      "operation_name":"ADD_SESSION",
+      "task_data":{
+        "id": userID,
+        "token": token,
+        "exp_date": moment(expired).format("YYYY-MM-DD HH:mm:ss"),
+        "user_req_date": moment(requested).format("YYYY-MM-DD HH:mm:ss"),
+        "created_at": moment(created).format("YYYY-MM-DD HH:mm:ss")
+      }
+    }
+    console.log("HERE")
+    axios(
+      {
+      method: 'post',
+      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      data: JSON.stringify(addSessionQuery)
+    })
+    .then(function (response) {
+      console.log("AXIOS RESPONSE",response.data);
+    //  tempRawData = response.data.Results;
     tempRawData.push({
-      id: "",
+      id: response.data.id,
       userID: userID,
       token: token,
       expired: expired,
@@ -116,6 +183,23 @@ function Session() {
     setToken("");
     setRawData(tempRawData);
     setRender(!render);
+    })
+    .catch(function (error) {
+      console.log("AXIOS RESPONSE",error);
+      message.error("Role already exists");
+    });
+    // tempRawData.push({
+    //   id: "",
+    //   userID: userID,
+    //   token: token,
+    //   expired: expired,
+    //   requested: requested,
+    //   created: created,
+    // });
+    // setUserID("");
+    // setToken("");
+    // setRawData(tempRawData);
+    // setRender(!render);
   }
   let dataToBeUsed = [];
   dataToBeUsed = createDataSource();

@@ -11,7 +11,9 @@ import {
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import _ from "lodash";
+import moment from "moment";
 import "antd/dist/antd.css";
+const axios = require('axios');
 
 function Credential() {
   const { Column } = Table;
@@ -25,6 +27,7 @@ function Credential() {
   const [expired, setExpired] = useState("");
   const [enabled, setEnabled] = useState("");
   const [created, setCreated] = useState("");
+  const [userOptions, setUserOptions] = useState([]);
   // State variable to trigger a re-render of component
   const [render, setRender] = useState(false);
   /**
@@ -32,49 +35,111 @@ function Credential() {
    * is re-rendered. This data represents the current state of data in sql
    */
   const [rawData, setRawData] = useState([
-    {
-      id: 1,
-      userID: 3,
-      hash: "112312312dsf",
-      expired: "1/2/21",
-      enabled: "true",
-      created: "2/2/12",
-    },
-    {
-      id: 2,
-      userID: 2,
-      hash: "asdfdas312dsf",
-      expired: "3/4/21",
-      enabled: "false",
-      created: "9/2/12",
-    },
-    {
-      id: 3,
-      userID: 6,
-      hash: "asdfsdaf32",
-      expired: "1/29/21",
-      enabled: "true",
-      created: "21/2/12",
-    },
+    // {
+    //   id: 1,
+    //   userID: 3,
+    //   hash: "112312312dsf",
+    //   expired: "1/2/21",
+    //   enabled: "true",
+    //   created: "2/2/12",
+    // },
+    // {
+    //   id: 2,
+    //   userID: 2,
+    //   hash: "asdfdas312dsf",
+    //   expired: "3/4/21",
+    //   enabled: "false",
+    //   created: "9/2/12",
+    // },
+    // {
+    //   id: 3,
+    //   userID: 6,
+    //   hash: "asdfsdaf32",
+    //   expired: "1/29/21",
+    //   enabled: "true",
+    //   created: "21/2/12",
+    // },
   ]);
-  const userOptions = _.map(
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    (element, index) => {
-      return <Option key={index} value={element} label={element} />;
+  let allCredentialsQuery = {
+    "username":"test_user00",
+    "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+    "operation_name":"GET_CREDS"
+  }
+   
+  if(rawData && rawData.length === 0){
+    axios(
+    {
+    method: 'post',
+    url: 'http://flip3.engr.oregonstate.edu:53200/API',
+    data: JSON.stringify(allCredentialsQuery)
+  })
+  .then(function (response) {
+    console.log("AXIOS RESPONSE",response.data.Results);
+    setRawData(response.data.Results);
+  })
+  .catch(function (error) {
+    console.log("AXIOS RESPONSE",error);
+  });
+  }
+  if(userOptions && userOptions.length == 0){
+    let allUserIdsQuery = {
+      "username":"test_user00",
+      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+      "operation_name":"GET_USRIDS",
     }
-  );
-  userOptions.push(
-    <Option key="key" value={""} label="Null">
-      Null
-    </Option>
-  );
+     let axiosResponse = null;
+      axios(
+      {
+      method: 'post',
+      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      data: JSON.stringify(allUserIdsQuery)
+    })
+    .then(function (response) {
+      console.log("AXIOS RESPONSE",response);
+      axiosResponse=response.data.Results;
+       let tempUserIds = _.map(
+        axiosResponse,
+        (element, index) => {
+          return <Option key={element.id} value={element.id} label={element.id} />
+        }
+      );
+      tempUserIds.push(<Option key={userOptions.length} value={"None"} label={"None"} />)
+
+      setUserOptions(tempUserIds);
+    })
+    .catch(function (error) {
+      console.log("AXIOS RESPONSE",error);
+    });
+  }
   function handleSelectUserChange(value) {
     console.log(value);
     setUserIDAdd(value);
   }
   function handleSelectEditUserChange(value, id) {
     console.log(value, id);
+    let changeUserId = {
+      "username":"test_user00",
+      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+      "operation_name":"UPDATE_CRED",
+      "task_data":{
+        "credential_id": id,
+        "new_user_id" : (value ==="" || value ==="None" || value == null) ? null : value
+      }
+    }
+    axios(
+      {
+      method: 'post',
+      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      data: JSON.stringify(changeUserId)
+    })
+    .then(function (response) {
+      console.log("AXIOS RESPONSE",response);
+      // setRawData(response.data.Results);
     setUserID(value);
+    })
+    .catch(function (error) {
+      console.log("AXIOS RESPONSE",error);
+    });
   }
   /**
    * This function creates the data packet for antd's table. Because
@@ -83,7 +148,7 @@ function Credential() {
   function createDataSource() {
     return _.map(rawData, (object, index) => {
       return {
-        key: index,
+        key: object.id,
         id: object.id,
         userID: (
           <Select
@@ -92,7 +157,7 @@ function Credential() {
             onChange={(value) => {
               handleSelectEditUserChange(value, object.id);
             }}
-            defaultValue={object.userID.toString()}
+            defaultValue={object?.userID ? object.userID.toString(): "None"}
             optionLabelProp="label"
           >
             {userOptions}
@@ -119,9 +184,32 @@ function Credential() {
       return;
     }
     let tempRawData = rawData;
+    console.log("USERID",userIDAdd)
+    let addCredentialQuery = {
+      "username":"test_user00",
+      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+      "operation_name":"ADD_CRED",
+      "task_data":{
+        "hash": hash,
+        "exp_date": moment(expired).format("YYYY-MM-DD"),
+        "created_date": moment(created).format("YYYY-MM-DD"),
+        "enabled": enabled === 'True'? 1:0,
+        "userID": (userIDAdd=="" || userIDAdd=="None")? null : userIDAdd
+      }
+    }
+    console.log("HERE")
+    axios(
+      {
+      method: 'post',
+      url: 'http://flip3.engr.oregonstate.edu:53200/API',
+      data: JSON.stringify(addCredentialQuery)
+    })
+    .then(function (response) {
+      console.log("AXIOS RESPONSE",response);
+    //  tempRawData = response.data.Results;
     tempRawData.push({
-      id: "",
-      userID: userIDAdd,
+      id: response.data.insertId,
+      userID: (userIDAdd=="" || userIDAdd=="None")? null : userIDAdd,
       hash: hash,
       expired: expired,
       enabled: enabled,
@@ -132,6 +220,22 @@ function Credential() {
     setHash("");
     setRawData(tempRawData);
     setRender(!render);
+    })
+    .catch(function (error) {
+      console.log("AXIOS RESPONSE",error);
+      message.error("Role already exists");
+    });
+    // tempRawData.push({
+    //   id: "",
+    //   userID: userIDAdd,
+    //   hash: hash,
+    //   expired: expired,
+    //   enabled: enabled,
+    //   created: created,
+    // });
+    // setHash("");
+    // setRawData(tempRawData);
+    // setRender(!render);
   }
   let dataToBeUsed = [];
   dataToBeUsed = createDataSource();
