@@ -587,9 +587,9 @@ function Action() {
                 data: JSON.stringify(filterQuery)
               })
               .then(function (response) {
-                console.log("AXIOS RESPONSE",response.data.insertId);
+                console.log("AXIOS RESPONSE",response.data.results);
                 setSearchResultsComponent(
-                  _.map(response.data.insertId, (object) => {
+                  _.map(response.data.results, (object) => {
                     return (
                       <p>
                         Id: {object.id} Action: {object.action_name}
