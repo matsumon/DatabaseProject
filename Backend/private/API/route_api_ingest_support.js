@@ -5,6 +5,7 @@ const credential = require('../Database/p_credential')  // import credential man
 const user = require('../Database/p_user');             // import user management handlers
 const role = require('../Database/p_role');             // import role_management handlers
 const action = require('../Database/p_action')          // import action management
+const role2user = require('../Database/p_user2_role')
 const { config } = require('winston');
 
 
@@ -623,7 +624,80 @@ async function evaluate_API_request(json_api_request, res) {
                 });
             
                 break;            
+            case "GET_ACTIONS":     // DONE
+                logon.validate_session(json_api_request).then((r_msg) => { // session is valid
+                    action.get_Actions().then(r_msg => {
+                        // send required response w/ resulting new ROLE ID
+                        res.status(200);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `${JSON.stringify(r_msg)}`;
+                        res.send(response);
 
+
+                    }).catch(error =>{
+                        // return error for bad session creation
+                        support.log("Error", `route_api_ingest_support.js - Could not GET_ROLEIDS : Unknown Error : \n ${error}`)
+                        res.status(500);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `HTTP 500 - CREDENTIALS VALIDATED - COULD NOT GET_ROLEIDS : API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                        res.send(response);
+
+                    })
+
+    
+
+                }).catch((error) => {   // session is invalid or error occurred
+                    res.status(403);
+                    res.setHeader('Access-Control-Allow-Origin', '*');
+                    res.setHeader('Access-Control-Allow-Headers', '*');
+                    res.setHeader('Access-Control-Request-Method', '*');
+                    const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                    res.send(response);
+                
+                });
+            
+                break;
+            case "CREATE_USR2ROLE": // DONE
+                logon.validate_session(json_api_request).then((r_msg) => { // session is valid
+                    role2user.create_association(json_api_request).then(r_msg => {
+                        // send required response w/ resulting new ROLE ID
+                        res.status(200);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `${JSON.stringify(r_msg)}`;
+                        res.send(response);
+
+
+                    }).catch(error =>{
+                        // return error for bad session creation
+                        support.log("Error", `route_api_ingest_support.js - Could not CREATE_USR2ROLE : Unknown Error : \n ${error}`)
+                        res.status(500);
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader('Access-Control-Allow-Headers', '*');
+                        res.setHeader('Access-Control-Request-Method', '*');
+                        const response = `HTTP 500 - CREDENTIALS VALIDATED - COULD NOT CREATE_USR2ROLE : API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                        res.send(response);
+
+                    })
+
+    
+
+                }).catch((error) => {   // session is invalid or error occurred
+                    res.status(403);
+                    res.setHeader('Access-Control-Allow-Origin', '*');
+                    res.setHeader('Access-Control-Allow-Headers', '*');
+                    res.setHeader('Access-Control-Request-Method', '*');
+                    const response = `HTTP 403 - SESSION NOT VALID: API REQUEST RECEIVED - ${support.getBasicDate()} \n ${JSON.stringify(json_api_request)}`;
+                    res.send(response);
+                
+                });
+            
+                break;
             // Deal with BAD API requests
             default:
 

@@ -131,7 +131,7 @@ async function get_Action_ids(){
             support.log("debug", `p_action.js- get_action_ids : Retrieved ALL action ID's`);
             const r_msg = {
                 "status": 1,
-                "Message": `User ids Successfully Retrieved`,
+                "Message": `Action ids Successfully Retrieved`,
                 "Results": rows[0]
             };
             // resolve returning the data package containing the details
@@ -145,7 +145,35 @@ async function get_Action_ids(){
     });
 }
 
+async function get_Actions(){
+    return new Promise((resolve, reject)=>{
+        support.log("debug", "p_action.js - get_action Getting all actions");
+
+        const get_userids_query = `SELECT action.id, action.action_name, role.id AS roleID 
+        FROM ${config.db_rootDatabase}.action JOIN role_to_action ON action.id = role_to_action.action_id
+            JOIN role ON role.id = role_to_action.role_id;`
+
+        db.promise_pool.query(get_userids_query).then((rows) => {
+            support.log("debug", `p_action.js- get_actions : Retrieved ALL actions`);
+            const r_msg = {
+                "status": 1,
+                "Message": `Actions Successfully Retrieved`,
+                "Results": rows[0]
+            };
+            // resolve returning the data package containing the details
+            resolve(r_msg);
+        }).catch((error) => {
+            // our query failed, log the incident
+            support.log("error", "p_action.js- get_actions : Unable to get action ids db.promise_pool failed to service the query")
+            // reject our promise, promoting the application pools failure as needed.
+            reject(error);
+        })
+    });
+
+}
+
 module.exports.add_Action = add_Action;
 module.exports.del_Action = del_Action;
 module.exports.update_Action = update_Action;
 module.exports.get_Action_ids = get_Action_ids;
+module.exports.get_Actions = get_Actions;
