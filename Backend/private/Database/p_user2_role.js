@@ -20,6 +20,7 @@ async function create_association(package){
                     const r_msg = {
                         "status": 1,
                         "Message": `user2role association Successfully Created`,
+                        "id" : `${package.task_data.userID}`
                     };
     
                     // resolve returning the data package containing the details
