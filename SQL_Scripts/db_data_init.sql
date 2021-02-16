@@ -5,7 +5,7 @@ This script should fill our databases with some base data for use in testing and
 /*
 Create Three Test Users
 */
-INSERT INTO `cs340_smithb22`.`user`
+INSERT INTO `user`
 (`id`,
 `username`,
 `created_at`,
@@ -29,78 +29,75 @@ current_timestamp(),
 Create four test crednetials
 */
 
-INSERT INTO `cs340_smithb22`.`credential`
-(`id`,
+INSERT INTO `credential`
+(
+`id`,
 `hash`,
 `exp_date`,
 `created_date`,
-`enabled`)
+`enabled`,
+`user_id`
+)
 VALUES
 (1,
 '',
 CURRENT_TIMESTAMP + INTERVAL 1 YEAR,
 CURRENT_TIMESTAMP,
+1,
 1),
 (2,
 '',
 CURRENT_TIMESTAMP + INTERVAL 1 YEAR,
 CURRENT_TIMESTAMP,
-0),
+0,
+2
+),
 (3,
 '',
 CURRENT_TIMESTAMP + INTERVAL 1 YEAR,
 CURRENT_TIMESTAMP,
-1),
+1,
+3),
 (4,
 '',
 CURRENT_TIMESTAMP + INTERVAL 1 YEAR,
 CURRENT_TIMESTAMP,
-1);
+1,
+2);
 
 
-/*
-Assign our Three Users to the Four Crednetials using the Join Table
-*/
-
-INSERT INTO `cs340_smithb22`.`user_to_cred`
-(`user_id`,
-`user_cred`)
-VALUES
-(1,1),
-(1,2),
-(2,3),
-(3,4);
 
 /*
 Create Four Types of ROLES
 */
 
-INSERT INTO `cs340_smithb22`.`role`
-(`id`,
-`logon`,
-`update`,
-`auth`,
-`validate`,
-`super`,
-`special`,
-`role_title`)
+INSERT INTO `role`
+(`role_title`)
 VALUES
-(1,1,1,1,0,0,0,'USER'),
-(2,1,0,0,1,0,0,'AUTHENTICATING_SERVICE'),
-(3,1,1,0,0,1,0,'SUPER_USER'),
-(4,0,0,0,0,0,0,'DISABLED USER');
+('USER'),
+('AUTHENTICATING_SERVICE'),
+('SUPER_USER'),
+('DISABLED USER');
+
+INSERT INTO `action`
+(`action_name`)
+VALUES
+('EDIT'),
+('REDO'),
+('DELETE'),
+('CREATE');
 
 /*
 Assign Our Three Users to their Approprate ROLES
 */
 
-INSERT INTO `cs340_smithb22`.`user_to_role`
+INSERT INTO `user_to_role`
 (`user_id`,
-`role`)
+`role_id`)
 VALUES
 (1,1),
-(2,1),
-(3,1),
+(2,2),
+(3,3),
 (1,2),
 (1,3);
 
@@ -109,7 +106,7 @@ VALUES
 Create some example sessions
 */
 
-INSERT INTO `cs340_smithb22`.`session`
+INSERT INTO `session`
 (`id`,
 `user_id`,
 `token`,
@@ -147,3 +144,23 @@ CURRENT_TIMESTAMP),
 CURRENT_TIMESTAMP + INTERVAL 15 MINUTE,
 CURRENT_TIMESTAMP - INTERVAL 10 MINUTE,
 CURRENT_TIMESTAMP);
+
+INSERT INTO `role_to_action`(
+    `action_id`,
+    `role_id`
+)
+VALUES(
+    1,1
+),
+(
+    2,2
+),
+(
+    3,3
+),
+(
+    1,2
+),
+(
+    1,3
+);
