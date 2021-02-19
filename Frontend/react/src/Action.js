@@ -13,8 +13,8 @@ import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import _ from "lodash";
 import "antd/dist/antd.css";
-import {url} from "./url.js"
-const axios = require('axios');
+import { url } from "./url.js";
+const axios = require("axios");
 
 function Action() {
   const { Option } = Select;
@@ -48,39 +48,39 @@ function Action() {
     // { id: 4, action: "Create", mmRoleID: [7, 8] },
   ]);
   let allActionsQuery = {
-    "username":"test_user00",
-    "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
-    "operation_name":"GET_ACTIONS"
+    username: "test_user00",
+    token: "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+    operation_name: "GET_ACTIONS",
     // "task_data":{
     //   "role_title":"ddddds13123sadasd1dd4534534dsfsdd23dfsd"
     // }
-  }
-   
+  };
+
   // if(rawData && rawData.length === 0){
-  if(firstTime){
-    console.log("FirstTime")
+  if (firstTime) {
+    // console.log("FirstTime");
+    axios({
+      method: "post",
+      url: url,
+      data: JSON.stringify(allActionsQuery),
+    })
+      .then(function (response) {
+        console.log("AXIOS HEREREREERERERER");
+        console.log("AXIOS RESPONSE", response.data.Results);
+        setRawData(response.data.Results);
     setFirstTime(false);
-    axios(
-    {
-    method: 'post',
-    url: url,
-    data: JSON.stringify(allActionsQuery)
-  })
-  .then(function (response) {
-    console.log("AXIOS HEREREREERERERER");
-    console.log("AXIOS RESPONSE",response.data.Results);
-    setRawData(response.data.Results);
-  })
-  .catch(function (error) {
-    console.log("AXIOS RESPONSE",error);
-  });
+
+      })
+      .catch(function (error) {
+        console.log("AXIOS RESPONSE", error);
+      });
   }
   // let allActionsQuery = {
   //   "username":"test_user00",
   //   "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
   //   "operation_name":"GET_SESSIONS",
   // }
-   
+
   // if(rawData && rawData.length === 0){
   //   axios(
   //   {
@@ -99,28 +99,27 @@ function Action() {
   function handleSelectChange(value, id) {
     console.log(value, id);
     let roleToActionQuery = {
-      "username":"test_user00",
-      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
-      "operation_name":"UPDATE_ROLE_ASCC",
-      "task_data":{
-        "ActionID": id,
-        "New_Roles": value
-      }
-    }
-     
-      axios(
-      {
-      method: 'post',
+      username: "test_user00",
+      token: "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+      operation_name: "UPDATE_ROLE_ASCC",
+      task_data: {
+        ActionID: id,
+        New_Roles: value,
+      },
+    };
+
+    axios({
+      method: "post",
       url: url,
-      data: JSON.stringify(roleToActionQuery)
+      data: JSON.stringify(roleToActionQuery),
     })
-    .then(function (response) {
-      console.log("AXIOS RESPONSE",response);
-    })
-    .catch(function (error) {
-      console.log("AXIOS RESPONSE",error);
-      message.error("Could not remove M:M relationship ");
-    });
+      .then(function (response) {
+        console.log("AXIOS RESPONSE", response);
+      })
+      .catch(function (error) {
+        console.log("AXIOS RESPONSE", error);
+        message.error("Could not remove M:M relationship ");
+      });
   }
   function handleSelectRoleChange(value) {
     console.log(value);
@@ -133,62 +132,56 @@ function Action() {
   // let roleOptions = _.map([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], (element, index) => {
   //   return <Option key = {index} value={element} tag={element} />;
   // });
-  if(roleOptions && roleOptions.length == 0){
+  if (roleOptions && roleOptions.length == 0) {
     let allRoleIdsQuery = {
-      "username":"test_user00",
-      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
-      "operation_name":"GET_ROLEIDS",
-    }
-     let axiosResponse = null;
-      axios(
-      {
-      method: 'post',
+      username: "test_user00",
+      token: "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+      operation_name: "GET_ROLEIDS",
+    };
+    let axiosResponse = null;
+    axios({
+      method: "post",
       url: url,
-      data: JSON.stringify(allRoleIdsQuery)
+      data: JSON.stringify(allRoleIdsQuery),
     })
-    .then(function (response) {
-      console.log("AXIOS RESPONSE",response);
-      axiosResponse=response.data.Results;
-       let tempRoleIds = _.map(
-        axiosResponse,
-        (element, index) => {
-          return <Option key={index} value={element.id} label={element.id} />
-        }
-      );
-      tempRoleIds.push( <Option key={tempRoleIds.length} value={"None"} label={"None"}/>)
-      setRoleOptions(tempRoleIds);
-    })
-    .catch(function (error) {
-      console.log("AXIOS RESPONSE",error);
-    });
+      .then(function (response) {
+        console.log("AXIOS RESPONSE", response);
+        axiosResponse = response.data.Results;
+        let tempRoleIds = _.map(axiosResponse, (element, index) => {
+          return <Option key={index} value={element.id} label={element.id} />;
+        });
+        tempRoleIds.push(
+          <Option key={tempRoleIds.length} value={"None"} label={"None"} />
+        );
+        setRoleOptions(tempRoleIds);
+      })
+      .catch(function (error) {
+        console.log("AXIOS RESPONSE", error);
+      });
   }
-  if(actionOptions && actionOptions.length == 0){
+  if (actionOptions && actionOptions.length == 0) {
     let allActionIdsQuery = {
-      "username":"test_user00",
-      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
-      "operation_name":"GET_ACTIONIDS",
-    }
-     let axiosResponse = null;
-      axios(
-      {
-      method: 'post',
+      username: "test_user00",
+      token: "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+      operation_name: "GET_ACTIONIDS",
+    };
+    let axiosResponse = null;
+    axios({
+      method: "post",
       url: url,
-      data: JSON.stringify(allActionIdsQuery)
+      data: JSON.stringify(allActionIdsQuery),
     })
-    .then(function (response) {
-      console.log("AXIOS RESPONSE",response);
-      axiosResponse=response.data.Results;
-       let tempActionIds = _.map(
-        axiosResponse,
-        (element, index) => {
-          return <Option key={index} value={element.id} label={element.id} />
-        }
-      );
-      setActionOptions(tempActionIds);
-    })
-    .catch(function (error) {
-      console.log("AXIOS RESPONSE",error);
-    });
+      .then(function (response) {
+        console.log("AXIOS RESPONSE", response);
+        axiosResponse = response.data.Results;
+        let tempActionIds = _.map(axiosResponse, (element, index) => {
+          return <Option key={index} value={element.id} label={element.id} />;
+        });
+        setActionOptions(tempActionIds);
+      })
+      .catch(function (error) {
+        console.log("AXIOS RESPONSE", error);
+      });
   }
   /**
    * This state has to exist because antd's table is having issues when the
@@ -204,31 +197,32 @@ function Action() {
     setDeleteEdit(-1);
     let copy = deleted;
     let deleteQuery = {
-      "username":"test_user00",
-      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
-      "operation_name":"DEL_ACTION",
-      "task_data":{
-        "id": e
-      }
-    }
-      axios(
-      {
-      method: 'post',
+      username: "test_user00",
+      token: "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+      operation_name: "DEL_ACTION",
+      task_data: {
+        id: e,
+      },
+    };
+    axios({
+      method: "post",
       url: url,
-      data: JSON.stringify(deleteQuery)
+      data: JSON.stringify(deleteQuery),
     })
-    .then(function (response) {
-      console.log("AXIOS RESPONSE",response.data);
-      // let tempRawData = rawData;
-      let indexDie= _.findIndex(rawData,(element)=>{return element.id === e})
-      copy.push(indexDie);
-      // setRawData(tempRawData);
-    setDeleted(copy);
-    setRender(!render);
-    })
-    .catch(function (error) {
-      console.log("AXIOS RESPONSE",error);
-    });
+      .then(function (response) {
+        console.log("AXIOS RESPONSE", response.data);
+        // let tempRawData = rawData;
+        let indexDie = _.findIndex(rawData, (element) => {
+          return element.id === e;
+        });
+        copy.push(indexDie);
+        // setRawData(tempRawData);
+        setDeleted(copy);
+        setRender(!render);
+      })
+      .catch(function (error) {
+        console.log("AXIOS RESPONSE", error);
+      });
     // copy.push(e);
     // setDeleted(copy);
     // setRender(!render);
@@ -248,30 +242,34 @@ function Action() {
     }
     let tempRawData = rawData;
     let updateQuery = {
-      "username":"test_user00",
-      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
-      "operation_name":"UPDATE_ACTION",
-      "task_data":{
-        "id" : e,
-        "task_name": action
-      }
-    }
-      axios(
-      {
-      method: 'post',
+      username: "test_user00",
+      token: "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+      operation_name: "UPDATE_ACTION",
+      task_data: {
+        id: e,
+        task_name: action,
+      },
+    };
+    axios({
+      method: "post",
       url: url,
-      data: JSON.stringify(updateQuery)
+      data: JSON.stringify(updateQuery),
     })
-    .then(function (response) {
-      console.log("AXIOS RESPONSE",response.data);
-      tempRawData[_.findIndex(rawData,(element)=>{return e === element.id})].action = action;
-      setRawData(tempRawData);
-      setAction("");
-      setEdit(-1);
-    })
-    .catch(function (error) {
-      console.log("AXIOS RESPONSE",error);
-    });
+      .then(function (response) {
+        console.log("AXIOS RESPONSE", response.data);
+        tempRawData[
+          _.findIndex(rawData, (element) => {
+            return e === element.id;
+          })
+        ].action = action;
+        setRawData(tempRawData);
+        setAction("");
+        setEdit(-1);
+      })
+      .catch(function (error) {
+        console.log("AXIOS RESPONSE", error);
+        message.error("Action cannot be duplicate ");
+      });
     // tempRawData[e].action = action;
     // setRawData(tempRawData);
     // setAction("");
@@ -287,6 +285,7 @@ function Action() {
    * the table is having issues we have to set deleted rows to null.
    */
   function createDataSource() {
+    console.log("RAW",rawData)
     return _.map(rawData, (object, index) => {
       let skip = false;
       // if the index is in the deleted state array then null is returned
@@ -302,6 +301,8 @@ function Action() {
           defaultOptions = _.map(object.mmRoleID, (element) => {
             return element;
           });
+          // defaultOptions = _.compact(_.flatten(defaultOptions));
+          // console.log("DEFAULT",defaultOptions)
         }
         return {
           key: object.id,
@@ -343,9 +344,19 @@ function Action() {
                   disabled={object.id === edit || edit !== -1}
                   type="primary"
                   onClick={() => {
-                    console.log(_.findIndex(rawData,(e)=>{return e.id == object.id}))
+                    console.log(
+                      _.findIndex(rawData, (e) => {
+                        return e.id == object.id;
+                      })
+                    );
                     setEdit(object.id);
-                    setAction(rawData[_.findIndex(rawData,(e)=>{return e.id == object.id})].action);
+                    setAction(
+                      rawData[
+                        _.findIndex(rawData, (e) => {
+                          return e.id == object.id;
+                        })
+                      ].action
+                    );
                   }}
                 >
                   Edit Action
@@ -363,7 +374,6 @@ function Action() {
                   disabled={object.id === deleteEdit || deleteEdit !== -1}
                   danger
                   onClick={() => {
-                    
                     setDeleteEdit(object.id);
                   }}
                 >
@@ -388,77 +398,90 @@ function Action() {
       message.error("Action was not filled out");
       return;
     }
-    let bool =0;
-    let objectID=null;
+    let bool = 0;
+    let objectID = null;
+    let sucessfulRoleID = null;
     let tempRawData = rawData;
     let addActionQuery = {
-      "username":"test_user00",
-      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
-      "operation_name":"ADD_ACTION",
-      "task_data":{
-        "action_name": addAction
-      }
-    }
-    console.log("HERE")
-    axios(
-      {
-      method: 'post',
+      username: "test_user00",
+      token: "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+      operation_name: "ADD_ACTION",
+      task_data: {
+        action_name: addAction,
+      },
+    };
+    console.log("HERE");
+    axios({
+      method: "post",
       url: url,
-      data: JSON.stringify(addActionQuery)
+      data: JSON.stringify(addActionQuery),
     })
-    .then(function (response) {
-      console.log("AXIOS RESPONSE",response.data,roleID);
-    //  tempRawData = response.data.Results;
-    //
-    objectID = response.data.insertId;
-    let actionRelationQuery = {
-      "username":"test_user00",
-      "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
-      "operation_name":"CREATE_ROLE2ACTION",
-      "task_data":{
-        "actionID" : response.data.insertId,
-        "roleID" : roleID
-      }
-    }
-     
-    if(response?.data?.insertId && roleID.length>0){
-      axios(
-      {
-      method: 'post',
-      url: url,
-      data: JSON.stringify(actionRelationQuery)
-    })
-    .then(function (response) {
-      console.log("AXIOS RESPONSE",response);
-      bool = 1
-      tempRawData.push({ id: response.data.insertId, action: addAction, mmRoleID: roleID ? [roleID]: roleID });
-      setRawData(tempRawData);
-      setAddAction("");
-      setRoleID();
-      setRender(!render);
-    })
-    .catch(function (error) {
-      console.log("AXIOS RESPONSE",error);
-    });
-    }
-    //
-    // tempRawData.push({ id: response.data.insertId, action: addAction, mmRoleID: roleID });
+      .then(function (response) {
+        console.log("AXIOS RESPONSE", response.data, roleID);
+        //  tempRawData = response.data.Results;
+        //
+        objectID = response.data.insertId;
+        let actionRelationQuery = {
+          username: "test_user00",
+          token:
+            "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+          operation_name: "CREATE_ROLE2ACTION",
+          task_data: {
+            actionID: response.data.insertId,
+            roleID: roleID,
+          },
+        };
+        console.log("OBJECT",objectID, roleID)
+        if (objectID && roleID) {
+          console.log("SEND")
+          axios({
+            method: "post",
+            url: url,
+            data: JSON.stringify(actionRelationQuery),
+          })
+            .then(function (response) {
+              console.log("AXIOS RESPONSE", response);
+              bool = 1;
+              // tempRawData.push({
+              //   id: response.data.insertId,
+              //   action: addAction,
+              //   mmRoleID: roleID ? [roleID] : roleID,
+              // });
+              // setRawData(tempRawData);
+              // setAddAction("");
+              // setRoleID();
+              // setRender(!render);
+              sucessfulRoleID=roleID
+            })
+            .catch(function (error) {
+              console.log("AXIOS RESPONSE", error);
+            });
+        }
+        if(objectID){
+          console.log("HERE",roleID)
+            tempRawData.push({ id: objectID, action: addAction, mmRoleID: roleID ? [roleID] : roleID });
+        setRawData(tempRawData);
+        setAddAction("");
+        setRoleID();
+        setRender(!render);
+        }
+        // tempRawData.push({ id: response.data.insertId, action: addAction, mmRoleID: roleID });
+        // setRawData(tempRawData);
+        // setAddAction("");
+        // setRoleID();
+        // setRender(!render);
+      })
+      .catch(function (error) {
+        console.log("AXIOS RESPONSE", error);
+        message.error("Action already exists");
+      });
+    // if(bool ===0 && objectID){
+    // console.log("ROLE",roleID)
+    // tempRawData.push({ id: objectID, action: addAction, mmRoleID: roleID ? [roleID]: roleID });
     // setRawData(tempRawData);
     // setAddAction("");
     // setRoleID();
     // setRender(!render);
-    })
-    .catch(function (error) {
-      console.log("AXIOS RESPONSE",error);
-      message.error("Action already exists");
-    });
-    // if(bool ===0 && objectID){
-      console.log("ROLE",roleID)
-      tempRawData.push({ id: objectID, action: addAction, mmRoleID: roleID ? [roleID]: roleID });
-      setRawData(tempRawData);
-      setAddAction("");
-      setRoleID();
-      setRender(!render);
     // }
     // tempRawData.push({ id: "", action: addAction, mmRoleID: roleID });
     // setRawData(tempRawData);
@@ -571,36 +594,36 @@ function Action() {
                 { id: 4, action: "Create" },
               ];
               let filterQuery = {
-                "username":"test_user00",
-                "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
-                "operation_name": "FILTER_ACTIONS",
-                "task_data": {
-                    "action_name" : actionSearch ? actionSearch : actionSearch,
-                    "actionIDs" : idSearch ? idSearch.toString() : null
-                    }
-              }
-               
-                axios(
-                {
-                method: 'post',
+                username: "test_user00",
+                token:
+                  "d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
+                operation_name: "FILTER_ACTIONS",
+                task_data: {
+                  action_name: actionSearch ? actionSearch : actionSearch,
+                  actionIDs: idSearch ? idSearch.toString() : null,
+                },
+              };
+
+              axios({
+                method: "post",
                 url: url,
-                data: JSON.stringify(filterQuery)
+                data: JSON.stringify(filterQuery),
               })
-              .then(function (response) {
-                console.log("AXIOS RESPONSE",response.data.results);
-                setSearchResultsComponent(
-                  _.map(response.data.results, (object) => {
-                    return (
-                      <p>
-                        Id: {object.id} Action: {object.action_name}
-                      </p>
-                    );
-                  })
-                );
-              })
-              .catch(function (error) {
-                console.log("AXIOS RESPONSE",error);
-              });
+                .then(function (response) {
+                  console.log("AXIOS RESPONSE", response.data.results);
+                  setSearchResultsComponent(
+                    _.map(response.data.results, (object) => {
+                      return (
+                        <p>
+                          Id: {object.id} Action: {object.action_name}
+                        </p>
+                      );
+                    })
+                  );
+                })
+                .catch(function (error) {
+                  console.log("AXIOS RESPONSE", error);
+                });
               // setSearchResultsComponent(
               //   _.map(returnValue, (object) => {
               //     return (
