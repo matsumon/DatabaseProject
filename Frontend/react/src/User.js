@@ -32,17 +32,11 @@ function User() {
    */
 
   const [rawData, setRawData] = useState([
-    // { id: 1, username: "Mike", created: "1/2/21", email: "blahblah@gmail.com" },
-    // { id: 2, username: "Lucy", created: "21/2/31", email: "dsfadsa@gmail.com" },
-    // { id: 3, username: "Will", created: "1/123/21", email: "asdfdf@gmail.com" },
   ]);
 let allUsersQuery = {
   "username":"test_user00",
   "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
   "operation_name":"GET_USRS"
-  // "task_data":{
-  //   "role_title":"ddddds13123sadasd1dd4534534dsfsdd23dfsd"
-  // }
 }
  
 if(rawData && rawData.length === 0){
@@ -98,6 +92,7 @@ if(rawData && rawData.length === 0){
         "email":email ? email : null
       }
     }
+    // Relationship - Implementing ADD users relationship
       axios(
       {
       method: 'post',
@@ -106,7 +101,6 @@ if(rawData && rawData.length === 0){
     })
     .then(function (response) {
       console.log("AXIOS RESPONSE",response.data);
-    //  tempRawData = response.data.Results;
      tempRawData.push({
       id: response.data.insertId,
       username: username,
@@ -125,18 +119,6 @@ if(rawData && rawData.length === 0){
         "User Already Exists"
       );
     });
-    // }
-    // tempRawData.push({
-    //   id: "",
-    //   username: username,
-    //   created: created,
-    //   email: email,
-    // });
-    // console.log("tmepRawData",tempRawData)
-    // setRawData(tempRawData);
-    // setUsername("");
-    // setEmail("");
-    // setRender(!render);
   }
   let dataToBeUsed = [];
   dataToBeUsed = createDataSource();

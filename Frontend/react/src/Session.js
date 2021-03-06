@@ -39,7 +39,6 @@ function Session() {
    * This data is held in a state variable so that it wont reset every time the component
    * is re-rendered. This data represents the current state of data in sql
    */
-  // let userOptions=[];
   if(userOptions && userOptions.length == 0){
     let allUserIdsQuery = {
       "username":"test_user00",
@@ -68,30 +67,6 @@ function Session() {
     });
   }
   const [rawData, setRawData] = useState([
-    // {
-    //   id: 1,
-    //   userID: 3,
-    //   token: "112312312dsf",
-    //   expired: "1/2/21",
-    //   requested: "1/1/22",
-    //   created: "2/2/12",
-    // },
-    // {
-    //   id: 2,
-    //   userID: 2,
-    //   token: "asdfdas312dsf",
-    //   expired: "3/4/21",
-    //   requested: "1/2/22",
-    //   created: "9/2/12",
-    // },
-    // {
-    //   id: 3,
-    //   userID: 6,
-    //   token: "asdfsdaf32",
-    //   expired: "1/29/21",
-    //   requested: "1/12/22",
-    //   created: "21/2/12",
-    // },
   ]);
   let allSessionsQuery = {
     "username":"test_user00",
@@ -163,7 +138,7 @@ function Session() {
         "created_at": moment(created).format("YYYY-MM-DD HH:mm:ss")
       }
     }
-    console.log("HERE")
+    // Relationship - Implementing ADD session relationship
     axios(
       {
       method: 'post',
@@ -172,7 +147,6 @@ function Session() {
     })
     .then(function (response) {
       console.log("AXIOS RESPONSE",response.data);
-    //  tempRawData = response.data.Results;
     tempRawData.push({
       id: response.data.id,
       userID: userID,
@@ -190,18 +164,6 @@ function Session() {
       console.log("AXIOS RESPONSE",error);
       message.error("Role already exists");
     });
-    // tempRawData.push({
-    //   id: "",
-    //   userID: userID,
-    //   token: token,
-    //   expired: expired,
-    //   requested: requested,
-    //   created: created,
-    // });
-    // setUserID("");
-    // setToken("");
-    // setRawData(tempRawData);
-    // setRender(!render);
   }
   let dataToBeUsed = [];
   dataToBeUsed = createDataSource();

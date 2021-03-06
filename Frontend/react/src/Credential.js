@@ -37,30 +37,6 @@ function Credential() {
    * is re-rendered. This data represents the current state of data in sql
    */
   const [rawData, setRawData] = useState([
-    // {
-    //   id: 1,
-    //   userID: 3,
-    //   hash: "112312312dsf",
-    //   expired: "1/2/21",
-    //   enabled: "true",
-    //   created: "2/2/12",
-    // },
-    // {
-    //   id: 2,
-    //   userID: 2,
-    //   hash: "asdfdas312dsf",
-    //   expired: "3/4/21",
-    //   enabled: "false",
-    //   created: "9/2/12",
-    // },
-    // {
-    //   id: 3,
-    //   userID: 6,
-    //   hash: "asdfsdaf32",
-    //   expired: "1/29/21",
-    //   enabled: "true",
-    //   created: "21/2/12",
-    // },
   ]);
   let allCredentialsQuery = {
     "username":"test_user00",
@@ -128,6 +104,7 @@ function Credential() {
         "new_user_id" : (value ==="" || value ==="None" || value == null) ? null : value
       }
     }
+    // Relationship - Implementing UPDATE credential relationship 
     axios(
       {
       method: 'post',
@@ -136,7 +113,6 @@ function Credential() {
     })
     .then(function (response) {
       console.log("AXIOS RESPONSE",response);
-      // setRawData(response.data.Results);
     setUserID(value);
     })
     .catch(function (error) {
@@ -199,7 +175,7 @@ function Credential() {
         "userID": (userIDAdd=="" || userIDAdd=="None")? null : userIDAdd
       }
     }
-    console.log("HERE")
+    // Relationship - Implementing ADD credential relationship
     axios(
       {
       method: 'post',
@@ -208,7 +184,6 @@ function Credential() {
     })
     .then(function (response) {
       console.log("AXIOS RESPONSE",response);
-    //  tempRawData = response.data.Results;
     tempRawData.push({
       id: response.data.insertId,
       userID: (userIDAdd=="" || userIDAdd=="None")? null : userIDAdd,
@@ -217,8 +192,6 @@ function Credential() {
       enabled: enabled,
       created: created,
     });
-    // setUserID("");
-    // setUserIDAdd("Null")
     setHash("");
     setRawData(tempRawData);
     setRender(!render);
@@ -227,17 +200,6 @@ function Credential() {
       console.log("AXIOS RESPONSE",error);
       message.error("Role already exists");
     });
-    // tempRawData.push({
-    //   id: "",
-    //   userID: userIDAdd,
-    //   hash: hash,
-    //   expired: expired,
-    //   enabled: enabled,
-    //   created: created,
-    // });
-    // setHash("");
-    // setRawData(tempRawData);
-    // setRender(!render);
   }
   let dataToBeUsed = [];
   dataToBeUsed = createDataSource();

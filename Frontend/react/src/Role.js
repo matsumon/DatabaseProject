@@ -24,18 +24,12 @@ function Role() {
    * is re-rendered. This data represents the current state of data in sql
    */
   const [rawData, setRawData] = useState([
-    // { id: 1, roleTitle: "Pilot", userID: "1, 2, 3" },
-    // { id: 2, roleTitle: "Capitain", userID: "1, 2, 3" },
-    // { id: 3, roleTitle: "Officer",userID: "1, 2, 3" },
   ]);
 
   let allRolesQuery = {
     "username":"test_user00",
     "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
     "operation_name":"GET_ROLES"
-    // "task_data":{
-    //   "role_title":"ddddds13123sadasd1dd4534534dsfsdd23dfsd"
-    // }
   }
    
   if(rawData && rawData.length === 0){
@@ -120,10 +114,9 @@ function Role() {
       "operation_name":"ADD_ROLE",
       "task_data":{
         "role_title": roleTitle,
-        // "roleUserID": (roleUserID ==="" || roleUserID ==="None") ? null : roleUserID
       }
     }
-    console.log("HERE")
+    // Relationship - Implementing ADD role and user_to_role relationship
     axios(
       {
       method: 'post',
@@ -132,7 +125,6 @@ function Role() {
     })
     .then(function (response) {
       console.log("AXIOS RESPONSE",response.data.id);
-    //  tempRawData = response.data.Results;
       let addRelationQuery = {
         "username":"test_user00",
         "token":"d7727ef8f9b18177f91fec2dd57afafaa21a041de61391e684f20d45b70cb947",
@@ -152,11 +144,6 @@ function Role() {
       .then(function (response) {
         console.log("AXIOS RESPONSE",response.data);
         setRoleUserID(response.data.id)
-      //  tempRawData = response.data.Results;
-      // tempRawData.push({ id: response.data.id, roleTitle: roleTitle, userID: roleUserID });
-  //     setRoleTitle("");
-  //  setRawData(tempRawData);
-  //     setRender(!render);
       })
       .catch(function (error) { 
         console.log("AXIOS RESPONSE",error);
@@ -171,11 +158,6 @@ function Role() {
       console.log("AXIOS RESPONSE",error);
       message.error("Role already exists");
     });
-    // tempRawData.push({ id: "", roleTitle: roleTitle, userID: roleUserID });
-    // setRoleTitle("");
-    // setRoleUserID("");
-    // setRawData(tempRawData);
-    // setRender(!render);
   }
   let dataToBeUsed = [];
   dataToBeUsed = createDataSource();
