@@ -1,6 +1,6 @@
 # CS340-DBProject
-Url: http://flip3.engr.oregonstate.edu:34521/
 Project Proposal
+
 Team Members
 Nicholas Matsumoto
 Brian Smith
