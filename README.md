@@ -1,4 +1,4 @@
-# CS340-DBProject
+# User-Authentication-Website
 Project Proposal
 
 Team Members:
